@@ -1,0 +1,21 @@
+{
+  "name": "com.azzazello.mvvm",
+  "version": "1.0.0",
+  "displayName": "MVVM",
+  "description": "Simple MVVM pattern",
+  "unity": "2020.3",
+  "dependencies": {
+	  "com.azzazello.disposable": "https://github.com/Azzazelloqq/Disposable.git#main"
+	  },
+  "keywords": [
+    "model",
+    "view",
+    "viewmodel",
+    "MVVM"
+  ],
+  "author": {
+    "name": "Azzazelloqq",
+    "email": "bog22232@ya.ru",
+    "url": "https://github.com/Azzazelloqq"
+  }
+}
