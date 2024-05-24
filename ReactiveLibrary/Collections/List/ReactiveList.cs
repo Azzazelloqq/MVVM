@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MVVM.ReactiveLibrary.Collections.List
+namespace MVVM.MVVM.ReactiveLibrary.Collections.List
 {
 public class ReactiveList<T> : IReactiveList<T>
 {
@@ -197,7 +197,7 @@ public class ReactiveList<T> : IReactiveList<T>
     {
         foreach (var action in _listenersItemAddedAtIndex)
         {
-            action?.Invoke(item, index);
+            action.Invoke(item, index);
         }
     }
 
@@ -205,7 +205,7 @@ public class ReactiveList<T> : IReactiveList<T>
     {
         foreach (var action in _listenersItemRemovedAtIndex)
         {
-            action?.Invoke(item, index);
+            action.Invoke(item, index);
         }
     }
     
@@ -213,7 +213,7 @@ public class ReactiveList<T> : IReactiveList<T>
     {
         foreach (var action in _listenersItemAdded)
         {
-            action?.Invoke(item);
+            action.Invoke(item);
         }
     }
 
@@ -221,7 +221,7 @@ public class ReactiveList<T> : IReactiveList<T>
     {
         foreach (var action in _listenersItemRemoved)
         {
-            action?.Invoke(item);
+            action.Invoke(item);
         }
     }
 
@@ -229,7 +229,7 @@ public class ReactiveList<T> : IReactiveList<T>
     {
         foreach (var action in _collectionChangedListeners)
         {
-            action?.Invoke(_list);
+            action.Invoke(_list);
         }
     }
 }

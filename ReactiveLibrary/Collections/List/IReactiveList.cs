@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MVVM.ReactiveLibrary.Collections.Base;
+using MVVM.MVVM.ReactiveLibrary.Collections.Base;
 
-namespace MVVM.ReactiveLibrary.Collections.List
+namespace MVVM.MVVM.ReactiveLibrary.Collections.List
 {
 public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
 {

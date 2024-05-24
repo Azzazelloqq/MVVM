@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MVVM.ReactiveLibrary.Collections.Base
+namespace MVVM.MVVM.ReactiveLibrary.Collections.Base
 {
 public interface IReadOnlyReactiveCollection<out T> : IEnumerable<T>, IDisposable
 {
