@@ -11,7 +11,6 @@ public interface IReadOnlyReactiveCollection<out T> : IEnumerable<T>, IDisposabl
     public void SubscribeOnItemRemoved(Action<T> onItemRemoved);
     public void SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved);
     public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true);
-    
     public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collection);
     public void UnsubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved);
     public void UnsubscribeOnItemAdded(Action<T> onItemAdded);

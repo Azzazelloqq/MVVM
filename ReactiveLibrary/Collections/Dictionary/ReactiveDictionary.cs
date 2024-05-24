@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Dictionary
 {
@@ -17,6 +17,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
     private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemAddedListeners;
     private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemRemovedListeners;
     private readonly List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>> _collectionChangedListeners;
+    private readonly List<Action<KeyValuePair<TKey, TValue>>> _valueChangedByKeyListeners;
     private readonly Dictionary<TKey, TValue> _dictionary;
 
     public ReactiveDictionary(int capacity, int listenersCapacity = 30)
@@ -25,6 +26,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         _itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
         _itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
         _collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
+        _valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
     }
 
     public ReactiveDictionary(int capacity, IEqualityComparer<TKey> comparer, int listenersCapacity = 30)
@@ -33,6 +35,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         _itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
         _itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
         _collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
+        _valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
     }
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -57,6 +60,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         _itemAddedListeners.Clear();
         _itemRemovedListeners.Clear();
         _collectionChangedListeners.Clear();
+        _valueChangedByKeyListeners.Clear();
     }
 
     public void SubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
@@ -85,6 +89,16 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         {
             collectionChanged.Invoke(_dictionary);
         }
+    }
+
+    public void SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
+    {
+        _valueChangedByKeyListeners.Add(action);
+    }
+
+    public void UnsubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
+    {
+        _valueChangedByKeyListeners.Remove(action);
     }
 
     public void UnsubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collection)
@@ -122,6 +136,51 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         _dictionary.Clear();
 
         NotifyCollectionChanged();
+    }
+    
+    public bool TryAdd(TKey key, TValue value)
+    {
+        var isSuccess = _dictionary.TryAdd(key, value);
+
+        if (!isSuccess)
+        {
+            return false;
+        }
+
+        NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
+        NotifyCollectionChanged();
+
+        return true;
+    }
+
+    public void TrimExcess()
+    {
+        _dictionary.TrimExcess();
+    }
+
+    public void TrimExcess(int capacity)
+    {
+        _dictionary.TrimExcess(capacity);
+    }
+
+    public bool ContainsValue(TValue value)
+    {
+        return _dictionary.ContainsValue(value);
+    }
+
+    public int EnsureCapacity(int capacity)
+    {
+        return _dictionary.EnsureCapacity(capacity);
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        _dictionary.GetObjectData(info, context);
+    }
+
+    public void OnDeserialization(object sender)
+    {
+        _dictionary.OnDeserialization(sender);
     }
 
     public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -208,13 +267,17 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         {
             var containsKey = _dictionary.ContainsKey(key);
             _dictionary[key] = value;
+            var keyValuePair = new KeyValuePair<TKey, TValue>(key, value);
+            
             if (containsKey)
             {
-                return;
+                NotifyValueChangedByKey(keyValuePair);
             }
-
-            NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
-            NotifyCollectionChanged();
+            else
+            {
+                NotifyItemAdded(keyValuePair);
+                NotifyCollectionChanged();
+            }
         }
     }
 
@@ -239,6 +302,14 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         foreach (var collectionChangedListener in _collectionChangedListeners)
         {
             collectionChangedListener.Invoke(_dictionary);
+        }
+    }
+
+    private void NotifyValueChangedByKey(KeyValuePair<TKey, TValue> item)
+    {
+        foreach (var valueChangedByKeyListener in _valueChangedByKeyListeners)
+        {
+            valueChangedByKeyListener.Invoke(item);
         }
     }
 }
