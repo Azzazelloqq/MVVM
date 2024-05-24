@@ -90,7 +90,7 @@ public class ReactiveList<T> : IReactiveList<T>
 
         _collectionChangedListeners.Add(collectionChanged);
     }
-
+    
     public void SubscribeOnItemAddedByIndex(Action<T, int> onItemAdded)
     {
         _listenersItemAddedAtIndex.Add(onItemAdded);
