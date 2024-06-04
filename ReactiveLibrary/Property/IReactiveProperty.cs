@@ -1,4 +1,4 @@
-﻿namespace MVVM.ReactiveLibrary.Property
+﻿namespace MVVM.MVVM.ReactiveLibrary.Property
 {
 public interface IReactiveProperty<TValue> : IReadOnlyReactiveProperty<TValue>
 {

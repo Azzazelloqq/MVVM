@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MVVM.ReactiveLibrary.Property
+namespace MVVM.MVVM.ReactiveLibrary.Property
 {
 public class ReactiveProperty<TValue> : IReactiveProperty<TValue>
 {

@@ -1,10 +1,10 @@
 ﻿using System;
+using MVVM.MVVM.ReactiveLibrary.Base;
 
-namespace MVVM.ReactiveLibrary.Property
+namespace MVVM.MVVM.ReactiveLibrary.Property
 {
-public interface IReadOnlyReactiveProperty<out TValue>
+public interface IReadOnlyReactiveProperty<out TValue> : IReactive
 {
-    public bool IsDisposed { get; }
     public bool HasValue { get; }
     public TValue Value { get; }
 
