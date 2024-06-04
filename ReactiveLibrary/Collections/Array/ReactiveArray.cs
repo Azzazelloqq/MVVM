@@ -94,9 +94,9 @@ public class ReactiveArray<T> : IReactiveArray<T>
         _itemChangedByIndexListeners.Remove(onItemChangedByIndex);
     }
 
-    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collection)
+    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged)
     {
-        _collectionChangedListeners.Remove(collection);
+        _collectionChangedListeners.Remove(collectionChanged);
     }
 
     [Obsolete("An array does not support adding and removing an element", true)]

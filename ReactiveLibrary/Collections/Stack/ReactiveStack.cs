@@ -2,40 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MVVM.MVVM.ReactiveLibrary.Collections.Queue
+namespace MVVM.MVVM.ReactiveLibrary.Collections.Stack
 {
-public class ReactiveQueue<T> : IReactiveQueue<T>
+public class ReactiveStack<T> : IReactiveStack<T>
 {
-    public int Count => _queue.Count;
-    public bool IsReadOnly => ((ICollection<T>)_queue).IsReadOnly;
+    public int Count => _stack.Count;
+    public bool IsReadOnly => ((ICollection<T>)_stack).IsReadOnly;
     public bool IsDisposed { get; private set; }
 
-    private readonly Queue<T> _queue;
+    private readonly Stack<T> _stack;
     private readonly List<Action<T>> _itemAddedActions;
     private readonly List<Action<T>> _itemRemovedActions;
     private readonly List<Action<IEnumerable<T>>> _collectionChangedListeners;
 
-    public ReactiveQueue(int listenersCapacity = 30)
+    public ReactiveStack(int listenersCapacity = 30)
     {
-        _queue = new Queue<T>();
+        _stack = new Stack<T>();
         
         _itemAddedActions = new List<Action<T>>(listenersCapacity);
         _itemRemovedActions = new List<Action<T>>(listenersCapacity);
         _collectionChangedListeners = new List<Action<IEnumerable<T>>>();
     }
 
-    public ReactiveQueue(IEnumerable<T> collection, int listenersCapacity = 30)
+    public ReactiveStack(IEnumerable<T> collection, int listenersCapacity = 30)
     {
-        _queue = new Queue<T>(collection);
+        _stack = new Stack<T>(collection);
         
         _itemAddedActions = new List<Action<T>>(listenersCapacity);
         _itemRemovedActions = new List<Action<T>>(listenersCapacity);
         _collectionChangedListeners = new List<Action<IEnumerable<T>>>();
     }
 
-    public ReactiveQueue(int capacity, int listenersCapacity = 30)
+    public ReactiveStack(int capacity, int listenersCapacity = 30)
     {
-        _queue = new Queue<T>(capacity);
+        _stack = new Stack<T>(capacity);
         
         _itemAddedActions = new List<Action<T>>(listenersCapacity);
         _itemRemovedActions = new List<Action<T>>(listenersCapacity);
@@ -44,7 +44,7 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     
     public IEnumerator<T> GetEnumerator()
     {
-        return _queue.GetEnumerator();
+        return _stack.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -59,8 +59,8 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
             return;
         }
         
-        _queue.Clear();
-
+        _stack.Clear();
+        
         _collectionChangedListeners.Clear();
         _itemAddedActions.Clear();
         _itemRemovedActions.Clear();
@@ -88,7 +88,7 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     {
         if (notifyOnSubscribe)
         {
-            collectionChanged?.Invoke(_queue);
+            collectionChanged.Invoke(_stack);
         }
         
         _collectionChangedListeners.Add(collectionChanged);
@@ -115,80 +115,79 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
         _itemRemovedActions.Remove(onItemRemoved);
     }
 
-    [Obsolete("A queue does not support adding an element. Use" + nameof(Enqueue), true)]
+    [Obsolete("A stack does not support adding an element. Use" + nameof(Push), true)]
     public void Add(T item)
     {
-        throw new NotImplementedException("An queue does not support adding an element. Use" + nameof(Enqueue));
+        throw new NotImplementedException("A stack does not support adding an element. Use" + nameof(Push));
     }
 
     public void Clear()
     {
-        _queue.Clear();
-        
+        _stack.Clear();
         NotifyCollectionChanged();
     }
 
     public bool Contains(T item)
     {
-        return _queue.Contains(item);
+        return _stack.Contains(item);
     }
 
     public void CopyTo(T[] array, int arrayIndex)
     {
-        _queue.CopyTo(array, arrayIndex);
-        
-        NotifyCollectionChanged();
+        _stack.CopyTo(array, arrayIndex);
     }
 
-    [Obsolete("A queue does not support removing an element. Use" + nameof(Dequeue), true)]
+    [Obsolete("A stack does not support removing an element. Use" + nameof(Pop), true)]
     public bool Remove(T item)
     {
-        throw new NotImplementedException("An queue does not support removing an element. Use" + nameof(Dequeue));
+        throw new NotImplementedException("A stack does not support removing an element. Use" + nameof(Pop));
     }
     
-    public object Clone()
+    public T Peek()
     {
-        var clone = new Queue<T>(_queue);
-        
-        return clone;
+        return _stack.Peek();
     }
 
-    public T Dequeue()
+    public T Pop()
     {
-        var dequeue = _queue.Dequeue();
-
-        NotifyItemRemoved(dequeue);
+        var pop = _stack.Pop();
+        NotifyItemRemoved(pop);
         NotifyCollectionChanged();
 
-        return dequeue;
+        return pop;
     }
 
-    public void Enqueue(T item)
+    public void Push(T item)
     {
-        _queue.Enqueue(item);
+        _stack.Push(item);
         
         NotifyItemAdded(item);
         NotifyCollectionChanged();
     }
 
-    public T Peek()
-    {
-        return _queue.Peek();
-    }
-
     public T[] ToArray()
     {
-        return _queue.ToArray();
-    }
-
-    public bool TryDequeue(out T result)
-    {
-        return _queue.TryDequeue(out result);
+        return _stack.ToArray();
     }
 
     public bool TryPeek(out T result)
     {
-        return _queue.TryPeek(out result);
+        return _stack.TryPeek(out result);
+    }
+
+    public bool TryPop(out T result)
+    {
+        var isSuccess = _stack.TryPop(out result);
+
+        if (!isSuccess)
+        {
+            return false;
+        }
+
+        NotifyItemRemoved(result);
+        NotifyCollectionChanged();
+
+        return true;
     }
     
     private void NotifyItemAdded(T item)
@@ -211,7 +210,7 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     {
         foreach (var collectionChangedListener in _collectionChangedListeners)
         {
-            collectionChangedListener.Invoke(_queue);
+            collectionChangedListener.Invoke(_stack);
         }
     }
 }

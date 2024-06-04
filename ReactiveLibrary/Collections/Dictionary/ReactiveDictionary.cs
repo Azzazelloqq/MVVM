@@ -101,9 +101,9 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         _valueChangedByKeyListeners.Remove(action);
     }
 
-    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collection)
+    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged)
     {
-        _collectionChangedListeners.Remove(collection);
+        _collectionChangedListeners.Remove(collectionChanged);
     }
 
     public void UnsubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,

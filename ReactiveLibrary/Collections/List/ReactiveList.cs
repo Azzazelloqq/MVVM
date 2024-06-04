@@ -121,9 +121,9 @@ public class ReactiveList<T> : IReactiveList<T>
         _listenersItemRemovedAtIndex.Remove(onItemRemoved);
     }
 
-    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collection)
+    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged)
     {
-        _collectionChangedListeners.Remove(collection);
+        _collectionChangedListeners.Remove(collectionChanged);
     }
 
     public void UnsubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
