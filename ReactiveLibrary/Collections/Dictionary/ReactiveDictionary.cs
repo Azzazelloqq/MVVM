@@ -137,7 +137,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 
         NotifyCollectionChanged();
     }
-    
+
     public bool TryAdd(TKey key, TValue value)
     {
         var isSuccess = _dictionary.TryAdd(key, value);
@@ -173,11 +173,11 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
         return _dictionary.EnsureCapacity(capacity);
     }
 
-    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    public void GetObjectDataGetObjectData(SerializationInfo info, StreamingContext context)
     {
         _dictionary.GetObjectData(info, context);
     }
-
+    
     public void OnDeserialization(object sender)
     {
         _dictionary.OnDeserialization(sender);
@@ -268,7 +268,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
             var containsKey = _dictionary.ContainsKey(key);
             _dictionary[key] = value;
             var keyValuePair = new KeyValuePair<TKey, TValue>(key, value);
-            
+
             if (containsKey)
             {
                 NotifyValueChangedByKey(keyValuePair);

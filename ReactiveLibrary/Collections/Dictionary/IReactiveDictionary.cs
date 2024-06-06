@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using MVVM.MVVM.ReactiveLibrary.Collections.Base;
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Dictionary
@@ -13,8 +14,7 @@ public interface IReactiveDictionary<TKey, TValue> :
     public void TrimExcess(int capacity);
     public bool ContainsValue(TValue value);
     public int EnsureCapacity(int capacity);
-    public void GetObjectData(System.Runtime.Serialization.SerializationInfo info,
-        System.Runtime.Serialization.StreamingContext context);
+    public void GetObjectDataGetObjectData(SerializationInfo info, StreamingContext context);
 
     public void OnDeserialization(object sender);
     
