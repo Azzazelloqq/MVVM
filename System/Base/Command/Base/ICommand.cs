@@ -2,7 +2,6 @@
 {
 public interface ICommand<in T>
 {
-    public bool CanExecute(T parameter);
-    public void Execute(T parameter);
+    public bool CanExecute();
 }
 }

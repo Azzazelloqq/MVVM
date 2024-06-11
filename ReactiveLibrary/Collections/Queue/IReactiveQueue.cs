@@ -1,8 +1,9 @@
-﻿using MVVM.MVVM.ReactiveLibrary.Collections.Base;
+﻿using System;
+using MVVM.MVVM.ReactiveLibrary.Collections.Base;
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Queue
 {
-public interface IReactiveQueue<T> : IReactiveCollection<T>, System.ICloneable
+public interface IReactiveQueue<T> : IReactiveCollection<T>, ICloneable
 {
     public T Dequeue();
     public void Enqueue(T item);

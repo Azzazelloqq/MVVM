@@ -18,6 +18,14 @@ public class ReactiveProperty<TValue> : IReactiveProperty<TValue>
         _onceCallbacks = new List<Action<TValue>>(listenersCapacity);
     }
 
+    public ReactiveProperty(TValue value, int listenersCapacity = 30)
+    {
+        Value = value;
+        
+        _callbacks = new List<Action<TValue>>(listenersCapacity);
+        _onceCallbacks = new List<Action<TValue>>(listenersCapacity);
+    }
+
     public void SetValue(TValue value)
     {
         if (IsDisposed)
