@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using MVVM.MVVM.ReactiveLibrary.Collections.Base;
-using UnityEngine.PlayerLoop;
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Array
 {
@@ -43,7 +42,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
             return;
         }
         
-        _array = System.Array.Empty<T>();
+        _array = global::System.Array.Empty<T>();
         IsDisposed = true;
     }
 
@@ -130,7 +129,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 
     public void Clear()
     {
-        _array = System.Array.Empty<T>();
+        _array = global::System.Array.Empty<T>();
         NotifyCollectionChanged();
     }
 
@@ -197,22 +196,22 @@ public class ReactiveArray<T> : IReactiveArray<T>
 
     public int BinarySearch(int index, int length, T value)
     {
-        return System.Array.BinarySearch(_array, index, length, value);
+        return global::System.Array.BinarySearch(_array, index, length, value);
     }
 
     public int BinarySearch(int index, int length, T value, IComparer<T> comparer)
     {
-        return System.Array.BinarySearch(_array, index, length, value, comparer);
+        return global::System.Array.BinarySearch(_array, index, length, value, comparer);
     }
 
     public int BinarySearch(T value)
     {
-        return System.Array.BinarySearch(_array, value);
+        return global::System.Array.BinarySearch(_array, value);
     }
 
     public int BinarySearch(T value, IComparer<T> comparer)
     {
-        return System.Array.BinarySearch(_array, value, comparer);
+        return global::System.Array.BinarySearch(_array, value, comparer);
     }
 
     public void ForEach(Action<T> action)
@@ -225,54 +224,54 @@ public class ReactiveArray<T> : IReactiveArray<T>
 
     public void Sort()
     {
-        System.Array.Sort(_array);
+        global::System.Array.Sort(_array);
         NotifyCollectionChanged();
     }
 
     public void Sort(IComparer<T> comparer)
     {
-        System.Array.Sort(_array, comparer);
+        global::System.Array.Sort(_array, comparer);
         NotifyCollectionChanged();
     }
 
     public void Sort(Comparison<T> comparison)
     {
-        System.Array.Sort(_array, comparison);
+        global::System.Array.Sort(_array, comparison);
         NotifyCollectionChanged();
     }
 
     public void Sort(int index, int length)
     {
-        System.Array.Sort(_array, index, length);
+        global::System.Array.Sort(_array, index, length);
         NotifyCollectionChanged();
     }
 
     public void Sort(int index, int length, IComparer<T> comparer)
     {
-        System.Array.Sort(_array, index, length, comparer);
+        global::System.Array.Sort(_array, index, length, comparer);
         NotifyCollectionChanged();
     }
 
     public void Reverse()
     {
-        System.Array.Reverse(_array);
+        global::System.Array.Reverse(_array);
         NotifyCollectionChanged();
     }
 
     public void Reverse(int index, int length)
     {
-        System.Array.Reverse(_array, index, length);
+        global::System.Array.Reverse(_array, index, length);
         NotifyCollectionChanged();
     }
 
     public T FindLast(Predicate<T> match)
     {
-        return System.Array.FindLast(_array, match);
+        return global::System.Array.FindLast(_array, match);
     }
 
     public T Find(Predicate<T> match)
     {
-        return System.Array.Find(_array, match);
+        return global::System.Array.Find(_array, match);
     }
 
     public IReadOnlyReactiveCollection<T> AsReadOnly()
