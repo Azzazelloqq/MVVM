@@ -2,7 +2,7 @@
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Base
 {
-public interface IReactiveCollection<T> : IReadOnlyReactiveCollection<T> , ICollection<T>
+public interface IReactiveCollection<T> : IReadOnlyReactiveCollection<T>, ICollection<T>
 {
 }
 }

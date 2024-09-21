@@ -6,311 +6,382 @@ using System.Runtime.Serialization;
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Dictionary
 {
+/// <summary>
+/// A reactive dictionary that provides notifications for additions, removals, and updates of key-value pairs.
+/// Implements <see cref="IReactiveDictionary{TKey, TValue}"/>.
+/// </summary>
+/// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
+/// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
 public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue>
 {
-    public ICollection<TKey> Keys => _dictionary.Keys;
-    public ICollection<TValue> Values => _dictionary.Values;
-    public bool IsDisposed { get; private set; }
-    public int Count => _dictionary.Count;
-    public bool IsReadOnly => ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).IsReadOnly;
+	/// <inheritdoc/>
+	public ICollection<TKey> Keys => _dictionary.Keys;
 
-    private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemAddedListeners;
-    private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemRemovedListeners;
-    private readonly List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>> _collectionChangedListeners;
-    private readonly List<Action<KeyValuePair<TKey, TValue>>> _valueChangedByKeyListeners;
-    private readonly Dictionary<TKey, TValue> _dictionary;
+	/// <inheritdoc/>
+	public ICollection<TValue> Values => _dictionary.Values;
 
-    public ReactiveDictionary(int capacity, int listenersCapacity = 30)
-    {
-        _dictionary = new Dictionary<TKey, TValue>(capacity);
-        _itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-        _itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
-        _valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-    }
+	/// <inheritdoc/>
+	public bool IsDisposed { get; private set; }
 
-    public ReactiveDictionary(int capacity, IEqualityComparer<TKey> comparer, int listenersCapacity = 30)
-    {
-        _dictionary = new Dictionary<TKey, TValue>(capacity, comparer);
-        _itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-        _itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
-        _valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-    }
+	/// <inheritdoc/>
+	public int Count => _dictionary.Count;
 
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-    {
-        return _dictionary.GetEnumerator();
-    }
+	/// <inheritdoc/>
+	public bool IsReadOnly => ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).IsReadOnly;
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+	private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemAddedListeners;
+	private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemRemovedListeners;
+	private readonly List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>> _collectionChangedListeners;
+	private readonly List<Action<KeyValuePair<TKey, TValue>>> _valueChangedByKeyListeners;
+	private readonly Dictionary<TKey, TValue> _dictionary;
 
-    public void Dispose()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ReactiveDictionary{TKey, TValue}"/> class with the specified capacity.
+	/// </summary>
+	/// <param name="capacity">The initial capacity of the dictionary.</param>
+	/// <param name="listenersCapacity">The initial capacity for event listeners.</param>
+	public ReactiveDictionary(int capacity, int listenersCapacity = 30)
+	{
+		_dictionary = new Dictionary<TKey, TValue>(capacity);
+		_itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+		_itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+		_collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
+		_valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+	}
 
-        IsDisposed = true;
-        _dictionary.Clear();
-        _itemAddedListeners.Clear();
-        _itemRemovedListeners.Clear();
-        _collectionChangedListeners.Clear();
-        _valueChangedByKeyListeners.Clear();
-    }
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ReactiveDictionary{TKey, TValue}"/> class with the specified capacity and comparer.
+	/// </summary>
+	/// <param name="capacity">The initial capacity of the dictionary.</param>
+	/// <param name="comparer">The comparer to use for the dictionary keys.</param>
+	/// <param name="listenersCapacity">The initial capacity for event listeners.</param>
+	public ReactiveDictionary(int capacity, IEqualityComparer<TKey> comparer, int listenersCapacity = 30)
+	{
+		_dictionary = new Dictionary<TKey, TValue>(capacity, comparer);
+		_itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+		_itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+		_collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
+		_valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+	}
 
-    public void SubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
-    {
-        _itemAddedListeners.Add(onItemAdded);
-    }
+	/// <inheritdoc/>
+	public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+	{
+		return _dictionary.GetEnumerator();
+	}
 
-    public void SubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
-    {
-        _itemRemovedListeners.Add(onItemRemoved);
-    }
+	/// <inheritdoc/>
+	IEnumerator IEnumerable.GetEnumerator()
+	{
+		return GetEnumerator();
+	}
 
-    public void SubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
-        Action<KeyValuePair<TKey, TValue>> onItemRemoved)
-    {
-        _itemAddedListeners.Add(onItemAdded);
-        _itemRemovedListeners.Add(onItemRemoved);
-    }
+	/// <inheritdoc/>
+	public void Dispose()
+	{
+		if (IsDisposed)
+		{
+			return;
+		}
 
-    public void SubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged,
-        bool notifyOnSubscribe = true)
-    {
-        _collectionChangedListeners.Add(collectionChanged);
+		IsDisposed = true;
+		_dictionary.Clear();
+		_itemAddedListeners.Clear();
+		_itemRemovedListeners.Clear();
+		_collectionChangedListeners.Clear();
+		_valueChangedByKeyListeners.Clear();
+	}
 
-        if (notifyOnSubscribe)
-        {
-            collectionChanged.Invoke(_dictionary);
-        }
-    }
+	/// <inheritdoc/>
+	public void SubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
+	{
+		_itemAddedListeners.Add(onItemAdded);
+	}
 
-    public void SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
-    {
-        _valueChangedByKeyListeners.Add(action);
-    }
+	/// <inheritdoc/>
+	public void SubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
+	{
+		_itemRemovedListeners.Add(onItemRemoved);
+	}
 
-    public void UnsubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
-    {
-        _valueChangedByKeyListeners.Remove(action);
-    }
+	/// <inheritdoc/>
+	public void SubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
+		Action<KeyValuePair<TKey, TValue>> onItemRemoved)
+	{
+		_itemAddedListeners.Add(onItemAdded);
+		_itemRemovedListeners.Add(onItemRemoved);
+	}
 
-    public void UnsubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged)
-    {
-        _collectionChangedListeners.Remove(collectionChanged);
-    }
+	/// <inheritdoc/>
+	public void SubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged,
+		bool notifyOnSubscribe = true)
+	{
+		_collectionChangedListeners.Add(collectionChanged);
 
-    public void UnsubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
-        Action<KeyValuePair<TKey, TValue>> onItemRemoved)
-    {
-        _itemAddedListeners.Remove(onItemAdded);
-        _itemRemovedListeners.Remove(onItemRemoved);
-    }
+		if (notifyOnSubscribe)
+		{
+			collectionChanged.Invoke(_dictionary);
+		}
+	}
 
-    public void UnsubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
-    {
-        _itemAddedListeners.Remove(onItemAdded);
-    }
+	/// <inheritdoc/>
+	public void SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
+	{
+		_valueChangedByKeyListeners.Add(action);
+	}
 
-    public void UnsubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
-    {
-        _itemRemovedListeners.Remove(onItemRemoved);
-    }
+	/// <inheritdoc/>
+	public void UnsubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
+	{
+		_valueChangedByKeyListeners.Remove(action);
+	}
 
-    public void Add(KeyValuePair<TKey, TValue> item)
-    {
-        _dictionary.Add(item.Key, item.Value);
+	/// <inheritdoc/>
+	public void UnsubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged)
+	{
+		_collectionChangedListeners.Remove(collectionChanged);
+	}
 
-        NotifyItemAdded(item);
-        NotifyCollectionChanged();
-    }
+	/// <inheritdoc/>
+	public void UnsubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
+		Action<KeyValuePair<TKey, TValue>> onItemRemoved)
+	{
+		_itemAddedListeners.Remove(onItemAdded);
+		_itemRemovedListeners.Remove(onItemRemoved);
+	}
 
-    public void Clear()
-    {
-        _dictionary.Clear();
+	/// <inheritdoc/>
+	public void UnsubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
+	{
+		_itemAddedListeners.Remove(onItemAdded);
+	}
 
-        NotifyCollectionChanged();
-    }
+	/// <inheritdoc/>
+	public void UnsubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
+	{
+		_itemRemovedListeners.Remove(onItemRemoved);
+	}
 
-    public bool TryAdd(TKey key, TValue value)
-    {
-        var isSuccess = _dictionary.TryAdd(key, value);
+	/// <inheritdoc/>
+	public void Add(KeyValuePair<TKey, TValue> item)
+	{
+		_dictionary.Add(item.Key, item.Value);
 
-        if (!isSuccess)
-        {
-            return false;
-        }
+		NotifyItemAdded(item);
+		NotifyCollectionChanged();
+	}
 
-        NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
-        NotifyCollectionChanged();
+	/// <inheritdoc/>
+	public void Clear()
+	{
+		_dictionary.Clear();
 
-        return true;
-    }
+		NotifyCollectionChanged();
+	}
 
-    public void TrimExcess()
-    {
-        _dictionary.TrimExcess();
-    }
+	/// <inheritdoc/>
+	public bool TryAdd(TKey key, TValue value)
+	{
+		var isSuccess = _dictionary.TryAdd(key, value);
 
-    public void TrimExcess(int capacity)
-    {
-        _dictionary.TrimExcess(capacity);
-    }
+		if (!isSuccess)
+		{
+			return false;
+		}
 
-    public bool ContainsValue(TValue value)
-    {
-        return _dictionary.ContainsValue(value);
-    }
+		NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
+		NotifyCollectionChanged();
 
-    public int EnsureCapacity(int capacity)
-    {
-        return _dictionary.EnsureCapacity(capacity);
-    }
+		return true;
+	}
 
-    public void GetObjectDataGetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        _dictionary.GetObjectData(info, context);
-    }
-    
-    public void OnDeserialization(object sender)
-    {
-        _dictionary.OnDeserialization(sender);
-    }
+	/// <inheritdoc/>
+	public void TrimExcess()
+	{
+		_dictionary.TrimExcess();
+	}
 
-    public bool Contains(KeyValuePair<TKey, TValue> item)
-    {
-        return _dictionary.Contains(item);
-    }
+	/// <inheritdoc/>
+	public void TrimExcess(int capacity)
+	{
+		_dictionary.TrimExcess(capacity);
+	}
 
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-    {
-        if (array == null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
+	/// <inheritdoc/>
+	public bool ContainsValue(TValue value)
+	{
+		return _dictionary.ContainsValue(value);
+	}
 
-        if (arrayIndex < 0 || arrayIndex > array.Length)
-        {
-            throw new ArgumentOutOfRangeException(nameof(arrayIndex));
-        }
+	/// <inheritdoc/>
+	public int EnsureCapacity(int capacity)
+	{
+		return _dictionary.EnsureCapacity(capacity);
+	}
 
-        if (array.Length - arrayIndex < _dictionary.Count)
-        {
-            throw new ArgumentException(
-                "The number of elements in the source dictionary is greater than the available space from arrayIndex to the end of the destination array.");
-        }
+	/// <inheritdoc/>
+	public void GetObjectDataGetObjectData(SerializationInfo info, StreamingContext context)
+	{
+		_dictionary.GetObjectData(info, context);
+	}
 
-        var i = arrayIndex;
-        foreach (var kvp in _dictionary)
-        {
-            array[i++] = kvp;
-        }
-    }
+	/// <inheritdoc/>
+	public void OnDeserialization(object sender)
+	{
+		_dictionary.OnDeserialization(sender);
+	}
 
-    public bool Remove(KeyValuePair<TKey, TValue> item)
-    {
-        var isRemoved = _dictionary.Remove(item.Key);
+	/// <inheritdoc/>
+	public bool Contains(KeyValuePair<TKey, TValue> item)
+	{
+		return _dictionary.Contains(item);
+	}
 
-        if (!isRemoved)
-        {
-            return false;
-        }
+	/// <inheritdoc/>
+	public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+	{
+		if (array == null)
+		{
+			throw new ArgumentNullException(nameof(array));
+		}
 
-        NotifyItemRemoved(item);
-        NotifyCollectionChanged();
+		if (arrayIndex < 0 || arrayIndex > array.Length)
+		{
+			throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+		}
 
-        return true;
-    }
+		if (array.Length - arrayIndex < _dictionary.Count)
+		{
+			throw new ArgumentException(
+				"The number of elements in the source dictionary is greater than the available space from arrayIndex to the end of the destination array.");
+		}
 
-    public void Add(TKey key, TValue value)
-    {
-        _dictionary.Add(key, value);
+		var i = arrayIndex;
+		foreach (var kvp in _dictionary)
+		{
+			array[i++] = kvp;
+		}
+	}
 
-        NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
-        NotifyCollectionChanged();
-    }
+	/// <inheritdoc/>
+	public bool Remove(KeyValuePair<TKey, TValue> item)
+	{
+		var isRemoved = _dictionary.Remove(item.Key);
 
-    public bool ContainsKey(TKey key)
-    {
-        return _dictionary.ContainsKey(key);
-    }
+		if (!isRemoved)
+		{
+			return false;
+		}
 
-    public bool Remove(TKey key)
-    {
-        var isRemoved = _dictionary.Remove(key, out var value);
-        if (!isRemoved)
-        {
-            return false;
-        }
+		NotifyItemRemoved(item);
+		NotifyCollectionChanged();
 
-        NotifyItemRemoved(new KeyValuePair<TKey, TValue>(key, value));
-        NotifyCollectionChanged();
+		return true;
+	}
 
-        return true;
-    }
+	/// <inheritdoc/>
+	public void Add(TKey key, TValue value)
+	{
+		_dictionary.Add(key, value);
 
-    public bool TryGetValue(TKey key, out TValue value)
-    {
-        return _dictionary.TryGetValue(key, out value);
-    }
+		NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
+		NotifyCollectionChanged();
+	}
 
-    public TValue this[TKey key]
-    {
-        get => _dictionary[key];
-        set
-        {
-            var containsKey = _dictionary.ContainsKey(key);
-            _dictionary[key] = value;
-            var keyValuePair = new KeyValuePair<TKey, TValue>(key, value);
+	/// <inheritdoc/>
+	public bool ContainsKey(TKey key)
+	{
+		return _dictionary.ContainsKey(key);
+	}
 
-            if (containsKey)
-            {
-                NotifyValueChangedByKey(keyValuePair);
-            }
-            else
-            {
-                NotifyItemAdded(keyValuePair);
-                NotifyCollectionChanged();
-            }
-        }
-    }
+	/// <inheritdoc/>
+	public bool Remove(TKey key)
+	{
+		var isRemoved = _dictionary.Remove(key, out var value);
+		if (!isRemoved)
+		{
+			return false;
+		}
 
-    private void NotifyItemAdded(KeyValuePair<TKey, TValue> item)
-    {
-        foreach (var itemAddedListener in _itemAddedListeners)
-        {
-            itemAddedListener.Invoke(item);
-        }
-    }
+		NotifyItemRemoved(new KeyValuePair<TKey, TValue>(key, value));
+		NotifyCollectionChanged();
 
-    private void NotifyItemRemoved(KeyValuePair<TKey, TValue> item)
-    {
-        foreach (var itemRemovedListener in _itemRemovedListeners)
-        {
-            itemRemovedListener.Invoke(item);
-        }
-    }
+		return true;
+	}
 
-    private void NotifyCollectionChanged()
-    {
-        foreach (var collectionChangedListener in _collectionChangedListeners)
-        {
-            collectionChangedListener.Invoke(_dictionary);
-        }
-    }
+	/// <inheritdoc/>
+	public bool TryGetValue(TKey key, out TValue value)
+	{
+		return _dictionary.TryGetValue(key, out value);
+	}
 
-    private void NotifyValueChangedByKey(KeyValuePair<TKey, TValue> item)
-    {
-        foreach (var valueChangedByKeyListener in _valueChangedByKeyListeners)
-        {
-            valueChangedByKeyListener.Invoke(item);
-        }
-    }
+	/// <inheritdoc/>
+	public TValue this[TKey key]
+	{
+		get => _dictionary[key];
+		set
+		{
+			var containsKey = _dictionary.ContainsKey(key);
+			_dictionary[key] = value;
+			var keyValuePair = new KeyValuePair<TKey, TValue>(key, value);
+
+			if (containsKey)
+			{
+				NotifyValueChangedByKey(keyValuePair);
+			}
+			else
+			{
+				NotifyItemAdded(keyValuePair);
+				NotifyCollectionChanged();
+			}
+		}
+	}
+
+	/// <summary>
+	/// Notifies subscribers that an item has been added to the dictionary.
+	/// </summary>
+	/// <param name="item">The item that was added.</param>
+	private void NotifyItemAdded(KeyValuePair<TKey, TValue> item)
+	{
+		foreach (var itemAddedListener in _itemAddedListeners)
+		{
+			itemAddedListener.Invoke(item);
+		}
+	}
+
+	/// <summary>
+	/// Notifies subscribers that an item has been removed from the dictionary.
+	/// </summary>
+	/// <param name="item">The item that was removed.</param>
+	private void NotifyItemRemoved(KeyValuePair<TKey, TValue> item)
+	{
+		foreach (var itemRemovedListener in _itemRemovedListeners)
+		{
+			itemRemovedListener.Invoke(item);
+		}
+	}
+
+	/// <summary>
+	/// Notifies subscribers that the entire collection has changed.
+	/// </summary>
+	private void NotifyCollectionChanged()
+	{
+		foreach (var collectionChangedListener in _collectionChangedListeners)
+		{
+			collectionChangedListener.Invoke(_dictionary);
+		}
+	}
+
+	/// <summary>
+	/// Notifies subscribers that the value for a specific key has changed.
+	/// </summary>
+	/// <param name="item">The key-value pair that was changed.</param>
+	private void NotifyValueChangedByKey(KeyValuePair<TKey, TValue> item)
+	{
+		foreach (var valueChangedByKeyListener in _valueChangedByKeyListeners)
+		{
+			valueChangedByKeyListener.Invoke(item);
+		}
+	}
 }
 }
