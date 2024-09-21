@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using MVVM.MVVM.ReactiveLibrary.Collections.Base;
+﻿using MVVM.MVVM.ReactiveLibrary.Collections.Base;
 
 namespace MVVM.MVVM.ReactiveLibrary.Collections.Stack
 {
