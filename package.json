@@ -5,7 +5,7 @@
   "description": "Simple MVVM pattern",
   "unity": "2020.3",
   "dependencies": {
-	  "com.azzazello.disposable": "https://github.com/Azzazelloqq/Disposable.git#main"
+	  "com.azzazello.disposable": "https://github.com/Azzazelloqq/Disposable.git#v1.0.1"
 	  },
   "keywords": [
     "model",
