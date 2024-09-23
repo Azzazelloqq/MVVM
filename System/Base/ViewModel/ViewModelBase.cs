@@ -1,4 +1,6 @@
-﻿using Disposable;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Disposable;
 using MVVM.MVVM.System.Base.Model;
 
 namespace MVVM.MVVM.System.Base.ViewModel
@@ -25,14 +27,48 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         this.model = model;
     }
 
+    /// <summary>
+    /// Asynchronously initializes the view model. This method must be called after the view model is created 
+    /// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
+    /// It calls the <see cref="OnInitializeAsync(CancellationToken)"/> method to allow subclasses to perform custom asynchronous initialization logic.
+    /// </summary>
+    /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
+    /// It allows the operation to be canceled.</param>
+    /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    public async Task InitializeAsync(CancellationToken token)
+    {
+        await OnInitializeAsync(token);
+    }
+    
+    /// <summary>
+    /// Initializes the view with the specified view model.
+    /// </summary>
+    /// <param name="viewModel">The view model to associate with the view.</param>
     public void Initialize()
     {
         OnInitialize();
     }
 
+    /// <summary>
+    /// Provides a hook for subclasses to perform custom initialization logic.
+    /// This method is called by the <see cref="Initialize"/> method.
+    /// </summary>
     protected virtual void OnInitialize()
     {
-        
+        // Subclasses can override this method to perform custom initialization logic.
+    }
+    
+    /// <summary>
+    /// Provides a hook for subclasses to perform custom asynchronous initialization logic.
+    /// This method is called by the <see cref="InitializeAsync(CancellationToken)"/> method.
+    /// Subclasses can override this method to implement specific asynchronous initialization behavior.
+    /// </summary>
+    /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
+    /// It allows the operation to be canceled.</param>
+    /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    protected virtual Task OnInitializeAsync(CancellationToken token)
+    {
+        return Task.CompletedTask;
     }
 }
 }

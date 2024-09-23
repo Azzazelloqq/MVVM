@@ -1,4 +1,6 @@
-﻿using Disposable;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Disposable;
 using MVVM.MVVM.System.Base.ViewModel;
 
 namespace MVVM.MVVM.System.Base.View
@@ -17,9 +19,21 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable, IV
     protected TViewModel viewModel;
     
     /// <summary>
-    /// Initializes the view with the specified view model.
+    /// Asynchronously initializes the model. This method must be called after the model is created 
+    /// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
     /// </summary>
-    /// <param name="viewModel">The view model to associate with the view.</param>
+    /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
+    /// It allows the operation to be canceled.</param>
+    /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    public async Task InitializeAsync(CancellationToken token)
+    {
+        await OnInitializeAsync(token);
+    }
+    
+    /// <summary>
+    /// Initializes the view. This method must be called after the view is created to set up any necessary state or dependencies.
+    /// Failure to call this method may result in incorrect behavior.
+    /// </summary>
     public void Initialize(TViewModel viewModel)
     {
         this.viewModel = viewModel;
@@ -27,18 +41,26 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable, IV
         OnInitialize();
     }
 
+    /// <summary>
+    /// Provides a hook for subclasses to perform custom initialization logic.
+    /// This method is called by the <see cref="Initialize"/> method.
+    /// </summary>
     protected virtual void OnInitialize()
     {
         
     }
     
     /// <summary>
-    /// Finalizer that ensures unmanaged resources are properly disposed of.
-    /// Calls <see cref="Dispose"/> with <c>false</c> to avoid disposing managed resources.
+    /// Provides a hook for subclasses to perform custom asynchronous initialization logic.
+    /// This method is called by the <see cref="InitializeAsync(CancellationToken)"/> method and can be overridden 
+    /// in derived classes to implement specific asynchronous initialization behavior.
     /// </summary>
-    ~ViewMonoBehavior()
+    /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
+    /// It allows the operation to be canceled.</param>
+    /// <returns>A task that represents the asynchronous initialization operation.</returns>
+    protected virtual Task OnInitializeAsync(CancellationToken token)
     {
-        Dispose(false);
+        return Task.CompletedTask;
     }
 }
 }
