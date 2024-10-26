@@ -19,6 +19,11 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
     protected TViewModel viewModel;
     
     /// <summary>
+    /// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
+    /// </summary>
+    protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
+    
+    /// <summary>
     /// Asynchronously initializes the model. This method must be called after the model is created 
     /// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
     /// </summary>
@@ -41,7 +46,35 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
         OnInitialize();
     }
 
+    /// <summary>
+    /// Provides a hook for subclasses to perform custom initialization logic.
+    /// This method is called by the <see cref="Initialize"/> method.
+    /// </summary>
     protected virtual void OnInitialize()
+    {
+        
+    }
+
+    /// <summary>
+    /// Disposes of the resources used by the object.
+    /// This method should be called when the object is no longer needed,
+    /// and it will automatically call <see cref="OnDispose"/> for additional cleanup logic in derived classes.
+    /// </summary>
+    public override void Dispose()
+    {
+        base.Dispose();
+        
+        OnDispose();
+        
+        compositeDisposable.Dispose();
+    }
+
+    /// <summary>
+    /// Provides additional dispose logic for derived classes.
+    /// Subclasses can override this method to implement custom cleanup code
+    /// without overriding the base <see cref="Dispose"/> method.
+    /// </summary>
+    protected virtual void OnDispose()
     {
         
     }

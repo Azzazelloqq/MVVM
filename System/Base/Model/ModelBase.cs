@@ -11,11 +11,17 @@ namespace MVVM.MVVM.System.Base.Model
 public abstract class ModelBase : DisposableBase, IModel
 {
 	/// <summary>
+	/// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
+	/// </summary>
+	protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
+	
+	/// <summary>
 	/// Initializes the model. This method must be called after the model is created to set up any necessary state or dependencies.
 	/// Failure to call this method may result in incorrect behavior.
 	/// </summary>
 	public void Initialize()
 	{
+		OnInitialize();
 	}
 
 	/// <summary>
@@ -31,14 +37,6 @@ public abstract class ModelBase : DisposableBase, IModel
 	}
 
 	/// <summary>
-	/// Provides a hook for subclasses to perform custom initialization logic.
-	/// This method is called by the <see cref="Initialize"/> method.
-	/// </summary>
-	protected virtual void OnInitialize()
-	{
-	}
-
-	/// <summary>
 	/// Provides a hook for subclasses to perform custom asynchronous initialization logic.
 	/// This method is called by the <see cref="InitializeAsync(CancellationToken)"/> method and can be overridden 
 	/// in derived classes to implement specific asynchronous initialization behavior.
@@ -46,9 +44,43 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
 	/// It allows the operation to be canceled.</param>
 	/// <returns>A task that represents the asynchronous initialization operation.</returns>
-	protected virtual Task OnInitializeAsync(CancellationToken token)
+	protected virtual async Task OnInitializeAsync(CancellationToken token)
 	{
-		return Task.CompletedTask;
+		await Task.CompletedTask;
+		
+		OnInitialize();
+	}
+	
+	/// <summary>
+	/// Provides a hook for subclasses to perform custom initialization logic.
+	/// This method is called by the <see cref="Initialize"/> method.
+	/// </summary>
+	protected virtual void OnInitialize()
+	{
+	}
+	
+	/// <summary>
+	/// Disposes of the resources used by the object.
+	/// This method should be called when the object is no longer needed,
+	/// and it will automatically call <see cref="OnDispose"/> for additional cleanup logic in derived classes.
+	/// </summary>
+	public override void Dispose()
+	{
+		OnDispose();
+
+		compositeDisposable.Dispose();
+        
+		base.Dispose();
+	}
+
+	/// <summary>
+	/// Provides additional dispose logic for derived classes.
+	/// Subclasses can override this method to implement custom cleanup code
+	/// without overriding the base <see cref="Dispose"/> method.
+	/// </summary>
+	protected virtual void OnDispose()
+	{
+		// Subclasses can override this method to perform custom dispose logic.
 	}
 }
 }
