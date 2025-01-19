@@ -16,6 +16,16 @@ public abstract class ModelBase : DisposableBase, IModel
 	protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
 	
 	/// <summary>
+	/// Gets the cancellation token that is triggered when the model is disposed.
+	/// </summary>
+	protected CancellationToken disposeToken => _disposeCancellationSource.Token;
+	
+	/// <summary>
+	/// The cancellation token source that is used to signal disposal of the model.
+	/// </summary>
+	private readonly CancellationTokenSource _disposeCancellationSource = new();
+	
+	/// <summary>
 	/// Initializes the model. This method must be called after the model is created to set up any necessary state or dependencies.
 	/// Failure to call this method may result in incorrect behavior.
 	/// </summary>
@@ -64,10 +74,17 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// This method should be called when the object is no longer needed,
 	/// and it will automatically call <see cref="OnDispose"/> for additional cleanup logic in derived classes.
 	/// </summary>
-	public override void Dispose()
+	public sealed override void Dispose()
 	{
 		OnDispose();
 
+		if (!_disposeCancellationSource.IsCancellationRequested)
+		{
+			_disposeCancellationSource.Cancel();
+		}
+		
+		_disposeCancellationSource.Dispose();
+		
 		compositeDisposable.Dispose();
         
 		base.Dispose();

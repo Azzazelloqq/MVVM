@@ -19,6 +19,16 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable, IV
     protected TViewModel viewModel;
     
     /// <summary>
+    /// Gets the cancellation token that is triggered when the view is disposed.
+    /// </summary>
+    protected CancellationToken disposeToken => _disposeCancellationSource.Token;
+	
+    /// <summary>
+    /// The cancellation token source that is used to signal disposal of the view.
+    /// </summary>
+    private readonly CancellationTokenSource _disposeCancellationSource = new();
+    
+    /// <summary>
     /// Asynchronously initializes the model. This method must be called after the model is created 
     /// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
     /// </summary>
@@ -41,6 +51,37 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable, IV
         OnInitialize();
     }
 
+    /// <summary>
+    /// Disposes of the resources used by the object.
+    /// This method should be called when the object is no longer needed,
+    /// and it will automatically call <see cref="OnDispose"/> for additional cleanup logic in derived classes.
+    /// </summary>
+    public sealed override void Dispose()
+    {
+        base.Dispose();
+        
+        OnDispose();
+        
+        if (!_disposeCancellationSource.IsCancellationRequested)
+        {
+            _disposeCancellationSource.Cancel();
+        }
+		
+        _disposeCancellationSource.Dispose();
+        
+        compositeDisposable.Dispose();
+    }
+    
+    /// <summary>
+    /// Provides additional dispose logic for derived classes.
+    /// Subclasses can override this method to implement custom cleanup code
+    /// without overriding the base <see cref="Dispose"/> method.
+    /// </summary>
+    protected virtual void OnDispose()
+    {
+        
+    }
+    
     /// <summary>
     /// Provides a hook for subclasses to perform custom initialization logic.
     /// This method is called by the <see cref="Initialize"/> method.

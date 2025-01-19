@@ -32,10 +32,10 @@ public class InventoryView : ViewMonoBehavior<InventoryViewModel>
 		viewModel.Items.SubscribeOnItemAdded(CreateItemView);
 	}
 
-	public override void Dispose()
+	protected override void OnDispose()
 	{
-		base.Dispose();
-
+		base.OnDispose();
+		
 		viewModel.Items.UnsubscribeOnItemAdded(CreateItemView);
 
 		_newItemInput.onValueChanged.RemoveListener(OnInputChanged);

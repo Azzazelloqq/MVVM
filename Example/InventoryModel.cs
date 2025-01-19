@@ -32,5 +32,12 @@ public class InventoryModel : ModelBase
 	{
 		Items.Remove(item);
 	}
+
+	protected override void OnDispose()
+	{
+		base.OnDispose();
+		
+		Items.Dispose();
+	}
 }
 }

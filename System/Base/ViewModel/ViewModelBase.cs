@@ -24,6 +24,16 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
     
     /// <summary>
+    /// Gets the cancellation token that is triggered when the viewModel is disposed.
+    /// </summary>
+    protected CancellationToken disposeToken => _disposeCancellationSource.Token;
+	
+    /// <summary>
+    /// The cancellation token source that is used to signal disposal of the viewModel.
+    /// </summary>
+    private readonly CancellationTokenSource _disposeCancellationSource = new();
+    
+    /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{TModel}"/> class with the specified model.
     /// </summary>
     /// <param name="model">The model to associate with the view model.</param>
@@ -60,10 +70,17 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// This method should be called when the object is no longer needed,
     /// and it will automatically call <see cref="OnDispose"/> for additional cleanup logic in derived classes.
     /// </summary>
-    public override void Dispose()
+    public sealed override void Dispose()
     {
         OnDispose();
 
+        if (!_disposeCancellationSource.IsCancellationRequested)
+        {
+            _disposeCancellationSource.Cancel();
+        }
+		
+        _disposeCancellationSource.Dispose();
+        
         compositeDisposable.Dispose();
         
         base.Dispose();

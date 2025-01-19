@@ -32,9 +32,9 @@ public class InventoryViewModel : ViewModelBase<InventoryModel>
 		model.Items.SubscribeOnItemRemoved(OnItemRemoved);
 	}
 
-	public override void Dispose()
+	protected override void OnDispose()
 	{
-		base.Dispose();
+		base.OnDispose();
 		
 		NewItemName.Dispose();
 		AddItemCommand.Dispose();
