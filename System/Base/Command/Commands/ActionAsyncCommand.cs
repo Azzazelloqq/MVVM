@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MVVM.MVVM.ReactiveLibrary.Property;
 using MVVM.MVVM.System.Base.Command.Base;
-using NotImplementedException = System.NotImplementedException;
 
 namespace MVVM.MVVM.System.Base.Command.Commands
 {
