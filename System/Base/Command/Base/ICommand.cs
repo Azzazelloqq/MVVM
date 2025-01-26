@@ -1,10 +1,9 @@
 ﻿namespace MVVM.MVVM.System.Base.Command.Base
 {
 /// <summary>
-/// Represents a command that can be executed with a parameter of type <typeparamref name="T"/>.
+/// Represents a command that can be executed and disposed.
 /// </summary>
-/// <typeparam name="T">The type of the parameter passed to the command.</typeparam>
-public interface ICommand<in T>
+public interface ICommand
 {
     /// <summary>
     /// Determines whether the command can be executed.

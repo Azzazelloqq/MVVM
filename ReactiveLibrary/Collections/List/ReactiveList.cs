@@ -20,13 +20,21 @@ public class ReactiveList<T> : IReactiveList<T>
     /// <inheritdoc/>
     public bool IsDisposed { get; private set; }
 
+    private List<Action<T>> ListenersItemAdded => _listenersItemAdded??= new List<Action<T>>(_listenersCapacity);
+    private List<Action<T>> ListenersItemRemoved => _listenersItemRemoved ??= new List<Action<T>>(_listenersCapacity);
+    private List<Action<T, int>> ListenersItemAddedAtIndex => _listenersItemAddedAtIndex ??= new List<Action<T, int>>(_listenersCapacity);
+    private List<Action<T, int>> ListenersItemRemovedAtIndex => _listenersItemRemovedAtIndex ??= new List<Action<T, int>>(_listenersCapacity);
+    private List<Action<T, int>> ListenersItemChangedAtIndex => _listenersItemChangedAtIndex ??= new List<Action<T, int>>(_listenersCapacity);
+    private List<Action<IEnumerable<T>>> CollectionChangedListeners => _collectionChangedListeners ??= new List<Action<IEnumerable<T>>>(_listenersCapacity);
+    
     private readonly List<T> _list;
-    private readonly List<Action<T>> _listenersItemAdded;
-    private readonly List<Action<T>> _listenersItemRemoved;
-    private readonly List<Action<T, int>> _listenersItemAddedAtIndex;
-    private readonly List<Action<T, int>> _listenersItemRemovedAtIndex;
-    private readonly List<Action<T, int>> _listenersItemChangedAtIndex;
-    private readonly List<Action<IEnumerable<T>>> _collectionChangedListeners;
+    private readonly int _listenersCapacity;
+    private List<Action<T>> _listenersItemAdded;
+    private List<Action<T>> _listenersItemRemoved;
+    private List<Action<T,int>> _listenersItemAddedAtIndex;
+    private List<Action<T,int>> _listenersItemRemovedAtIndex;
+    private List<Action<T,int>> _listenersItemChangedAtIndex;
+    private List<Action<IEnumerable<T>>> _collectionChangedListeners;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveList{T}"/> class with a specified capacity.
@@ -36,12 +44,7 @@ public class ReactiveList<T> : IReactiveList<T>
     public ReactiveList(int capacity = 0, int listenersCapacity = 30)
     {
         _list = new List<T>(capacity);
-        _listenersItemAdded = new List<Action<T>>(listenersCapacity);
-        _listenersItemRemoved = new List<Action<T>>(listenersCapacity);
-        _listenersItemAddedAtIndex = new List<Action<T, int>>(listenersCapacity);
-        _listenersItemRemovedAtIndex = new List<Action<T, int>>(listenersCapacity);
-        _listenersItemChangedAtIndex = new List<Action<T, int>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<T>>>(listenersCapacity);
+        _listenersCapacity = listenersCapacity;
     }
 
     /// <summary>
@@ -52,12 +55,7 @@ public class ReactiveList<T> : IReactiveList<T>
     public ReactiveList(IEnumerable<T> collection, int listenersCapacity = 30)
     {
         _list = new List<T>(collection);
-        _listenersItemAdded = new List<Action<T>>(listenersCapacity);
-        _listenersItemRemoved = new List<Action<T>>(listenersCapacity);
-        _listenersItemAddedAtIndex = new List<Action<T, int>>(listenersCapacity);
-        _listenersItemRemovedAtIndex = new List<Action<T, int>>(listenersCapacity);
-        _listenersItemChangedAtIndex = new List<Action<T, int>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<T>>>(listenersCapacity);
+        _listenersCapacity = listenersCapacity;
     }
 
     /// <inheritdoc/>
@@ -78,24 +76,24 @@ public class ReactiveList<T> : IReactiveList<T>
         IsDisposed = true;
 
         _list.Clear();
-        _listenersItemAdded.Clear();
-        _listenersItemRemoved.Clear();
-        _collectionChangedListeners.Clear();
-        _listenersItemAddedAtIndex.Clear();
-        _listenersItemRemovedAtIndex.Clear();
-        _listenersItemChangedAtIndex.Clear();
+        ListenersItemAdded.Clear();
+        ListenersItemRemoved.Clear();
+        CollectionChangedListeners.Clear();
+        ListenersItemAddedAtIndex.Clear();
+        ListenersItemRemovedAtIndex.Clear();
+        ListenersItemChangedAtIndex.Clear();
     }
     
     /// <inheritdoc/>
     public void SubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _listenersItemAdded.Add(onItemAdded);
+        ListenersItemAdded.Add(onItemAdded);
     }
     
     /// <inheritdoc/>
     public void SubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _listenersItemRemoved.Add(onItemRemoved);
+        ListenersItemRemoved.Add(onItemRemoved);
     }
     
     /// <inheritdoc/>
@@ -113,68 +111,68 @@ public class ReactiveList<T> : IReactiveList<T>
             collectionChanged(_list);
         }
 
-        _collectionChangedListeners.Add(collectionChanged);
+        CollectionChangedListeners.Add(collectionChanged);
     }
         
     /// <inheritdoc/>
     public void SubscribeOnItemAddedByIndex(Action<T, int> onItemAdded)
     {
-        _listenersItemAddedAtIndex.Add(onItemAdded);
+        ListenersItemAddedAtIndex.Add(onItemAdded);
     }
     
     /// <inheritdoc/>
     public void SubscribeOnItemRemovedByIndex(Action<T, int> onItemRemoved)
     {
-        _listenersItemRemovedAtIndex.Add(onItemRemoved);
+        ListenersItemRemovedAtIndex.Add(onItemRemoved);
     }
     
     /// <inheritdoc/>
     public void SubscribeOnItemChangedByIndex(Action<T, int> onItemChanged)
     {
-        _listenersItemChangedAtIndex.Add(onItemChanged);
+        ListenersItemChangedAtIndex.Add(onItemChanged);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnItemChangedByIndex(Action<T, int> onItemChanged)
     {
-        _listenersItemChangedAtIndex.Remove(onItemChanged);
+        ListenersItemChangedAtIndex.Remove(onItemChanged);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnItemAddedByIndex(Action<T, int> onItemAdded)
     {
-        _listenersItemAddedAtIndex.Remove(onItemAdded);
+        ListenersItemAddedAtIndex.Remove(onItemAdded);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnItemRemovedByIndex(Action<T, int> onItemRemoved)
     {
-        _listenersItemRemovedAtIndex.Remove(onItemRemoved);
+        ListenersItemRemovedAtIndex.Remove(onItemRemoved);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged)
     {
-        _collectionChangedListeners.Remove(collectionChanged);
+        CollectionChangedListeners.Remove(collectionChanged);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
     {
-        _listenersItemAdded.Remove(onItemAdded);
-        _listenersItemRemoved.Remove(onItemRemoved);
+        ListenersItemAdded.Remove(onItemAdded);
+        ListenersItemRemoved.Remove(onItemRemoved);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _listenersItemAdded.Remove(onItemAdded);
+        ListenersItemAdded.Remove(onItemAdded);
     }
     
     /// <inheritdoc/>
     public void UnsubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _listenersItemRemoved.Remove(onItemRemoved);
+        ListenersItemRemoved.Remove(onItemRemoved);
     }
 
     /// <inheritdoc/>
@@ -463,7 +461,7 @@ public class ReactiveList<T> : IReactiveList<T>
     
     private void NotifyItemAddedAtIndex(T item, int index)
     {
-        foreach (var action in _listenersItemAddedAtIndex)
+        foreach (var action in ListenersItemAddedAtIndex)
         {
             action.Invoke(item, index);
         }
@@ -471,7 +469,7 @@ public class ReactiveList<T> : IReactiveList<T>
     
     private void NotifyItemRemovedAtIndex(T item, int index)
     {
-        foreach (var action in _listenersItemRemovedAtIndex)
+        foreach (var action in ListenersItemRemovedAtIndex)
         {
             action.Invoke(item, index);
         }
@@ -479,7 +477,7 @@ public class ReactiveList<T> : IReactiveList<T>
         
     private void NotifyItemAdded(T item)
     {
-        foreach (var action in _listenersItemAdded)
+        foreach (var action in ListenersItemAdded)
         {
             action.Invoke(item);
         }
@@ -487,7 +485,7 @@ public class ReactiveList<T> : IReactiveList<T>
     
     private void NotifyItemRemoved(T item)
     {
-        foreach (var action in _listenersItemRemoved)
+        foreach (var action in ListenersItemRemoved)
         {
             action.Invoke(item);
         }
@@ -495,7 +493,7 @@ public class ReactiveList<T> : IReactiveList<T>
     
     private void NotifyCollectionChanged()
     {
-        foreach (var action in _collectionChangedListeners)
+        foreach (var action in CollectionChangedListeners)
         {
             action.Invoke(_list);
         }
@@ -503,7 +501,7 @@ public class ReactiveList<T> : IReactiveList<T>
     
     private void NotifyItemChangedAtIndex(T item, int index)
     {
-        foreach (var action in _listenersItemChangedAtIndex)
+        foreach (var action in ListenersItemChangedAtIndex)
         {
             action.Invoke(item, index);
         }

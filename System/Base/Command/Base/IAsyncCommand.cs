@@ -3,11 +3,9 @@
 namespace MVVM.MVVM.System.Base.Command.Base
 {
 /// <summary>
-/// Represents an asynchronous command that can execute an operation with a parameter of type <typeparamref name="T"/>.
-/// Inherits from <see cref="ICommand{T}"/>.
+/// Represents an asynchronous command that can be executed with a parameter of type <typeparamref name="T"/>.
 /// </summary>
-/// <typeparam name="T">The type of the parameter passed to the command when it is executed.</typeparam>
-public interface IAsyncCommand<in T> : ICommand<T>
+public interface IAsyncCommand<in T> : ICommand
 {
     /// <summary>
     /// Executes the command asynchronously with the specified parameter.

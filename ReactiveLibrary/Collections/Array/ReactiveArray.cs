@@ -31,8 +31,12 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// </summary>
 	private T[] _array;
 
+	private List<Action<T, int>> ItemChangedByIndexListeners => _itemChangedByIndexListeners?? new List<Action<T, int>>(_listenersCapacity);
+	private List<Action<IEnumerable<T>>> CollectionChangedListeners => _collectionChangedListeners?? new List<Action<IEnumerable<T>>>(_listenersCapacity);
+
 	private readonly List<Action<T, int>> _itemChangedByIndexListeners;
-	private readonly List<Action<IEnumerable<T>>> _collectionChangedListeners;
+	private List<Action<IEnumerable<T>>> _collectionChangedListeners;
+	private readonly int _listenersCapacity;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ReactiveArray{T}"/> class with a specified length 
@@ -40,11 +44,10 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// </summary>
 	/// <param name="length">The length of the array.</param>
 	/// <param name="listenersCapacity">The initial capacity for listeners. Defaults to 30.</param>
-	public ReactiveArray(int length, int listenersCapacity = 30)
+	public ReactiveArray(int length, int listenersCapacity = 10)
 	{
 		_array = new T[length];
-		_itemChangedByIndexListeners = new List<Action<T, int>>(listenersCapacity);
-		_collectionChangedListeners = new List<Action<IEnumerable<T>>>(listenersCapacity);
+		_listenersCapacity = listenersCapacity;
 	}
 
 	/// <summary>
@@ -60,9 +63,8 @@ public class ReactiveArray<T> : IReactiveArray<T>
 		{
 			_array[i] = array[i];
 		}
-
-		_itemChangedByIndexListeners = new List<Action<T, int>>(listenersCapacity);
-		_collectionChangedListeners = new List<Action<IEnumerable<T>>>(listenersCapacity);
+		
+		_listenersCapacity = listenersCapacity;
 	}
 
 	/// <inheritdoc/>
@@ -116,25 +118,25 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <inheritdoc/>
 	public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
 	{
-		_collectionChangedListeners.Add(collectionChanged);
+		CollectionChangedListeners.Add(collectionChanged);
 	}
 
 	/// <inheritdoc/>
 	public void SubscribeOnItemChangedByIndex(Action<T, int> onItemChangedByIndex)
 	{
-		_itemChangedByIndexListeners.Add(onItemChangedByIndex);
+		ItemChangedByIndexListeners.Add(onItemChangedByIndex);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnItemChangedByIndex(Action<T, int> onItemChangedByIndex)
 	{
-		_itemChangedByIndexListeners.Remove(onItemChangedByIndex);
+		ItemChangedByIndexListeners.Remove(onItemChangedByIndex);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged)
 	{
-		_collectionChangedListeners.Remove(collectionChanged);
+		CollectionChangedListeners.Remove(collectionChanged);
 	}
 
 	/// <inheritdoc/>
@@ -354,7 +356,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <param name="index">The index where the item changed.</param>
 	private void NotifyItemChangedByIndex(T item, int index)
 	{
-		foreach (var itemChangedByIndexListener in _itemChangedByIndexListeners)
+		foreach (var itemChangedByIndexListener in ItemChangedByIndexListeners)
 		{
 			itemChangedByIndexListener.Invoke(item, index);
 		}
@@ -365,7 +367,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// </summary>
 	private void NotifyCollectionChanged()
 	{
-		foreach (var collectionChangedListener in _collectionChangedListeners)
+		foreach (var collectionChangedListener in CollectionChangedListeners)
 		{
 			collectionChangedListener.Invoke(_array);
 		}

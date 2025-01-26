@@ -25,17 +25,17 @@ public class RelayCommand<T> : IRelayCommand<T>
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecute = new ReactiveProperty<bool>(canExecute?.Invoke() ?? true);
     }
-    
-    /// <inheritdoc/>
-    public bool CanExecute()
-    {
-        return _canExecute.Value;
-    }
 
     public void Dispose()
     {
         _canExecute.Dispose();
         _execute = null;
+    }
+
+    /// <inheritdoc/>
+    public bool CanExecute()
+    {
+        return _canExecute.Value;
     }
 
     /// <inheritdoc/>

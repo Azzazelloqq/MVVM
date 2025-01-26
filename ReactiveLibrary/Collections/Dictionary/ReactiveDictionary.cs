@@ -29,24 +29,27 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// <inheritdoc/>
 	public bool IsReadOnly => ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).IsReadOnly;
 
-	private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemAddedListeners;
-	private readonly List<Action<KeyValuePair<TKey, TValue>>> _itemRemovedListeners;
-	private readonly List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>> _collectionChangedListeners;
-	private readonly List<Action<KeyValuePair<TKey, TValue>>> _valueChangedByKeyListeners;
+	private List<Action<KeyValuePair<TKey, TValue>>> ItemAddedListeners => _itemAddedListeners??= new List<Action<KeyValuePair<TKey, TValue>>>(_listenersCapacity);
+	private List<Action<KeyValuePair<TKey, TValue>>> ItemRemovedListeners => _itemRemovedListeners??= new List<Action<KeyValuePair<TKey, TValue>>>(_listenersCapacity);
+	private List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>> CollectionChangedListeners => _collectionChangedListeners??= new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(_listenersCapacity);
+	private List<Action<KeyValuePair<TKey, TValue>>> ValueChangedByKeyListeners => _valueChangedByKeyListeners??= new List<Action<KeyValuePair<TKey, TValue>>>(_listenersCapacity);
+	
+	private List<Action<KeyValuePair<TKey, TValue>>> _itemAddedListeners;
+	private List<Action<KeyValuePair<TKey, TValue>>> _itemRemovedListeners;
+	private List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>> _collectionChangedListeners;
+	private List<Action<KeyValuePair<TKey, TValue>>> _valueChangedByKeyListeners;
 	private readonly Dictionary<TKey, TValue> _dictionary;
+	private readonly int _listenersCapacity;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ReactiveDictionary{TKey, TValue}"/> class with the specified capacity.
 	/// </summary>
 	/// <param name="capacity">The initial capacity of the dictionary.</param>
 	/// <param name="listenersCapacity">The initial capacity for event listeners.</param>
-	public ReactiveDictionary(int capacity, int listenersCapacity = 30)
+	public ReactiveDictionary(int capacity, int listenersCapacity = 15)
 	{
 		_dictionary = new Dictionary<TKey, TValue>(capacity);
-		_itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-		_itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-		_collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
-		_valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+		_listenersCapacity = listenersCapacity;
 	}
 
 	/// <summary>
@@ -58,10 +61,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	public ReactiveDictionary(int capacity, IEqualityComparer<TKey> comparer, int listenersCapacity = 30)
 	{
 		_dictionary = new Dictionary<TKey, TValue>(capacity, comparer);
-		_itemAddedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-		_itemRemovedListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
-		_collectionChangedListeners = new List<Action<IEnumerable<KeyValuePair<TKey, TValue>>>>(listenersCapacity);
-		_valueChangedByKeyListeners = new List<Action<KeyValuePair<TKey, TValue>>>(listenersCapacity);
+		_listenersCapacity = listenersCapacity;
 	}
 
 	/// <inheritdoc/>
@@ -86,37 +86,37 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 
 		IsDisposed = true;
 		_dictionary.Clear();
-		_itemAddedListeners.Clear();
-		_itemRemovedListeners.Clear();
-		_collectionChangedListeners.Clear();
-		_valueChangedByKeyListeners.Clear();
+		ItemAddedListeners.Clear();
+		ItemRemovedListeners.Clear();
+		CollectionChangedListeners.Clear();
+		ValueChangedByKeyListeners.Clear();
 	}
 
 	/// <inheritdoc/>
 	public void SubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
 	{
-		_itemAddedListeners.Add(onItemAdded);
+		ItemAddedListeners.Add(onItemAdded);
 	}
 
 	/// <inheritdoc/>
 	public void SubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
 	{
-		_itemRemovedListeners.Add(onItemRemoved);
+		ItemRemovedListeners.Add(onItemRemoved);
 	}
 
 	/// <inheritdoc/>
 	public void SubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
 		Action<KeyValuePair<TKey, TValue>> onItemRemoved)
 	{
-		_itemAddedListeners.Add(onItemAdded);
-		_itemRemovedListeners.Add(onItemRemoved);
+		ItemAddedListeners.Add(onItemAdded);
+		ItemRemovedListeners.Add(onItemRemoved);
 	}
 
 	/// <inheritdoc/>
 	public void SubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged,
 		bool notifyOnSubscribe = true)
 	{
-		_collectionChangedListeners.Add(collectionChanged);
+		CollectionChangedListeners.Add(collectionChanged);
 
 		if (notifyOnSubscribe)
 		{
@@ -127,39 +127,39 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// <inheritdoc/>
 	public void SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
 	{
-		_valueChangedByKeyListeners.Add(action);
+		ValueChangedByKeyListeners.Add(action);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
 	{
-		_valueChangedByKeyListeners.Remove(action);
+		ValueChangedByKeyListeners.Remove(action);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged)
 	{
-		_collectionChangedListeners.Remove(collectionChanged);
+		CollectionChangedListeners.Remove(collectionChanged);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
 		Action<KeyValuePair<TKey, TValue>> onItemRemoved)
 	{
-		_itemAddedListeners.Remove(onItemAdded);
-		_itemRemovedListeners.Remove(onItemRemoved);
+		ItemAddedListeners.Remove(onItemAdded);
+		ItemRemovedListeners.Remove(onItemRemoved);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
 	{
-		_itemAddedListeners.Remove(onItemAdded);
+		ItemAddedListeners.Remove(onItemAdded);
 	}
 
 	/// <inheritdoc/>
 	public void UnsubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
 	{
-		_itemRemovedListeners.Remove(onItemRemoved);
+		ItemRemovedListeners.Remove(onItemRemoved);
 	}
 
 	/// <inheritdoc/>
@@ -343,7 +343,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// <param name="item">The item that was added.</param>
 	private void NotifyItemAdded(KeyValuePair<TKey, TValue> item)
 	{
-		foreach (var itemAddedListener in _itemAddedListeners)
+		foreach (var itemAddedListener in ItemAddedListeners)
 		{
 			itemAddedListener.Invoke(item);
 		}
@@ -355,7 +355,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// <param name="item">The item that was removed.</param>
 	private void NotifyItemRemoved(KeyValuePair<TKey, TValue> item)
 	{
-		foreach (var itemRemovedListener in _itemRemovedListeners)
+		foreach (var itemRemovedListener in ItemRemovedListeners)
 		{
 			itemRemovedListener.Invoke(item);
 		}
@@ -366,7 +366,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// </summary>
 	private void NotifyCollectionChanged()
 	{
-		foreach (var collectionChangedListener in _collectionChangedListeners)
+		foreach (var collectionChangedListener in CollectionChangedListeners)
 		{
 			collectionChangedListener.Invoke(_dictionary);
 		}
@@ -378,7 +378,7 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// <param name="item">The key-value pair that was changed.</param>
 	private void NotifyValueChangedByKey(KeyValuePair<TKey, TValue> item)
 	{
-		foreach (var valueChangedByKeyListener in _valueChangedByKeyListeners)
+		foreach (var valueChangedByKeyListener in ValueChangedByKeyListeners)
 		{
 			valueChangedByKeyListener.Invoke(item);
 		}

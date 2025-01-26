@@ -14,7 +14,7 @@ namespace MVVM.MVVM.System.Base.Command.Commands
 /// <typeparam name="T">The type of the parameter passed to the command when it is executed.</typeparam>
 public class AsyncRelayCommand<T> : IAsyncCommand<T>
 {
-    private Func<Task> _execute;
+    private Func<T, Task> _execute;
     private readonly ReactiveProperty<bool> _canExecute;
     private readonly CancellationTokenSource _disposeCancellationTokenSource;
 
@@ -24,11 +24,19 @@ public class AsyncRelayCommand<T> : IAsyncCommand<T>
     /// <param name="execute">The asynchronous function to execute when the command is triggered.</param>
     /// <param name="canExecute">A function that determines whether the command can be executed. Defaults to <c>true</c> if not provided.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> function is <c>null</c>.</exception>
-    public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute = null)
+    public AsyncRelayCommand(Func<T, Task> execute, Func<bool> canExecute = null)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecute = new ReactiveProperty<bool>(canExecute?.Invoke() ?? true);
         _disposeCancellationTokenSource = new CancellationTokenSource();
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _execute = null;
+        _canExecute.Dispose();
+        _disposeCancellationTokenSource.Dispose();
     }
 
     /// <inheritdoc/>
@@ -44,21 +52,15 @@ public class AsyncRelayCommand<T> : IAsyncCommand<T>
             return;
         }
         
-        await _execute();
+        await _execute(parameter);
     }
 
     /// <inheritdoc/>
     public bool CanExecute()
     {
-        return _canExecute.Value;
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        _execute = null;
-        _canExecute.Dispose();
-        _disposeCancellationTokenSource.Dispose();
+        var isCancellationRequested = _disposeCancellationTokenSource.IsCancellationRequested;
+        
+        return _canExecute.Value && !isCancellationRequested;
     }
 }
 }

@@ -11,7 +11,7 @@ namespace MVVM.MVVM.System.Base.View
 /// Inherits from <see cref="MonoBehaviourDisposable"/> to provide both MonoBehaviour functionality and disposal management.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model associated with the view, which implements <see cref="IViewModel"/>.</typeparam>
-public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable, IView where TViewModel : IViewModel
+public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  IView where TViewModel : IViewModel
 {
     /// <summary>
     /// The view model associated with the view.
@@ -29,19 +29,21 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable, IV
     private readonly CancellationTokenSource _disposeCancellationSource = new();
     
     /// <summary>
-    /// Asynchronously initializes the model. This method must be called after the model is created 
+    /// Asynchronously initializes the view. This method must be called after the model is created 
     /// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
     /// </summary>
     /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
     /// It allows the operation to be canceled.</param>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync(CancellationToken token)
+    public async Task InitializeAsync(TViewModel viewModel, CancellationToken token)
     {
+        this.viewModel = viewModel;
+        
         await OnInitializeAsync(token);
     }
     
     /// <summary>
-    /// Initializes the view. This method must be called after the view is created to set up any necessary state or dependencies.
+    /// Initializes the view. This method must be called after the model is created to set up any necessary state or dependencies.
     /// Failure to call this method may result in incorrect behavior.
     /// </summary>
     public void Initialize(TViewModel viewModel)

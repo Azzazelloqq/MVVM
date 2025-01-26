@@ -20,10 +20,16 @@ public class ReactiveStack<T> : IReactiveStack<T>
     /// <inheritdoc/>
     public bool IsDisposed { get; private set; }
 
+    private List<Action<T>> ItemAddedActions => _itemAddedActions ??= new List<Action<T>>(_listenersCapacity);
+    private List<Action<T>> ItemRemovedActions => _itemRemovedActions ??= new List<Action<T>>(_listenersCapacity);
+    private List<Action<IEnumerable<T>>> CollectionChangedListeners => _collectionChangedListeners ??= new List<Action<IEnumerable<T>>>(_listenersCapacity);
+
+    private List<Action<T>> _itemAddedActions;
+    private List<Action<T>> _itemRemovedActions;
+    private List<Action<IEnumerable<T>>> _collectionChangedListeners;
+
     private readonly Stack<T> _stack;
-    private readonly List<Action<T>> _itemAddedActions;
-    private readonly List<Action<T>> _itemRemovedActions;
-    private readonly List<Action<IEnumerable<T>>> _collectionChangedListeners;
+    private readonly int _listenersCapacity;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveStack{T}"/> class with the default capacity.
@@ -32,10 +38,8 @@ public class ReactiveStack<T> : IReactiveStack<T>
     public ReactiveStack(int listenersCapacity = 30)
     {
         _stack = new Stack<T>();
-        
-        _itemAddedActions = new List<Action<T>>(listenersCapacity);
-        _itemRemovedActions = new List<Action<T>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<T>>>();
+     
+        _listenersCapacity = listenersCapacity;
     }
 
     /// <summary>
@@ -47,9 +51,7 @@ public class ReactiveStack<T> : IReactiveStack<T>
     {
         _stack = new Stack<T>(collection);
         
-        _itemAddedActions = new List<Action<T>>(listenersCapacity);
-        _itemRemovedActions = new List<Action<T>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<T>>>();
+        _listenersCapacity = listenersCapacity;
     }
 
     
@@ -62,9 +64,7 @@ public class ReactiveStack<T> : IReactiveStack<T>
     {
         _stack = new Stack<T>(capacity);
         
-        _itemAddedActions = new List<Action<T>>(listenersCapacity);
-        _itemRemovedActions = new List<Action<T>>(listenersCapacity);
-        _collectionChangedListeners = new List<Action<IEnumerable<T>>>();
+        _listenersCapacity = listenersCapacity;
     }
     
     /// <inheritdoc/>
@@ -89,9 +89,9 @@ public class ReactiveStack<T> : IReactiveStack<T>
         
         _stack.Clear();
         
-        _collectionChangedListeners.Clear();
-        _itemAddedActions.Clear();
-        _itemRemovedActions.Clear();
+        CollectionChangedListeners.Clear();
+        ItemAddedActions.Clear();
+        ItemRemovedActions.Clear();
         
         IsDisposed = true;
     }
@@ -99,20 +99,20 @@ public class ReactiveStack<T> : IReactiveStack<T>
     /// <inheritdoc/>
     public void SubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _itemAddedActions.Add(onItemAdded);
+        ItemAddedActions.Add(onItemAdded);
     }
 
     /// <inheritdoc/>
     public void SubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _itemRemovedActions.Add(onItemRemoved);
+        ItemRemovedActions.Add(onItemRemoved);
     }
 
     /// <inheritdoc/>
     public void SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
     {
-        _itemAddedActions.Add(onItemAdded);
-        _itemRemovedActions.Add(onItemRemoved);
+        ItemAddedActions.Add(onItemAdded);
+        ItemRemovedActions.Add(onItemRemoved);
     }
 
     /// <inheritdoc/>
@@ -123,32 +123,32 @@ public class ReactiveStack<T> : IReactiveStack<T>
             collectionChanged.Invoke(_stack);
         }
         
-        _collectionChangedListeners.Add(collectionChanged);
+        CollectionChangedListeners.Add(collectionChanged);
     }
 
     /// <inheritdoc/>
     public void UnsubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged)
     {
-        _collectionChangedListeners.Remove(collectionChanged);
+        CollectionChangedListeners.Remove(collectionChanged);
     }
 
     /// <inheritdoc/>
     public void UnsubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
     {
-        _itemAddedActions.Remove(onItemAdded);
-        _itemRemovedActions.Remove(onItemRemoved);
+        ItemAddedActions.Remove(onItemAdded);
+        ItemRemovedActions.Remove(onItemRemoved);
     }
 
     /// <inheritdoc/>
     public void UnsubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _itemAddedActions.Remove(onItemAdded);
+        ItemAddedActions.Remove(onItemAdded);
     }
 
     /// <inheritdoc/>
     public void UnsubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _itemRemovedActions.Remove(onItemRemoved);
+        ItemRemovedActions.Remove(onItemRemoved);
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public class ReactiveStack<T> : IReactiveStack<T>
     
     private void NotifyItemAdded(T item)
     {
-        foreach (var itemAddedAction in _itemAddedActions)
+        foreach (var itemAddedAction in ItemAddedActions)
         {
             itemAddedAction.Invoke(item);
         }
@@ -258,7 +258,7 @@ public class ReactiveStack<T> : IReactiveStack<T>
 
     private void NotifyItemRemoved(T item)
     {
-        foreach (var itemRemovedAction in _itemRemovedActions)
+        foreach (var itemRemovedAction in ItemRemovedActions)
         {
             itemRemovedAction.Invoke(item);
         }
@@ -266,7 +266,7 @@ public class ReactiveStack<T> : IReactiveStack<T>
 
     private void NotifyCollectionChanged()
     {
-        foreach (var collectionChangedListener in _collectionChangedListeners)
+        foreach (var collectionChangedListener in CollectionChangedListeners)
         {
             collectionChangedListener.Invoke(_stack);
         }

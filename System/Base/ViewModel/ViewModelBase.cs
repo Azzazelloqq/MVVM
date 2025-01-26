@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Disposable;
 using MVVM.MVVM.System.Base.Model;
+using MVVM.MVVM.System.Base.View;
 
 namespace MVVM.MVVM.System.Base.ViewModel
 {
@@ -17,7 +18,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// The model associated with the view model.
     /// </summary>
     protected TModel model;
-
+    
     /// <summary>
     /// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
     /// </summary>
@@ -53,6 +54,8 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
     public async Task InitializeAsync(CancellationToken token)
     {
+        await model.InitializeAsync(token);
+        
         await OnInitializeAsync(token);
     }
     
@@ -62,6 +65,8 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <param name="viewModel">The view model to associate with the view.</param>
     public void Initialize()
     {
+        model.Initialize();
+        
         OnInitialize();
     }
 
