@@ -13,7 +13,7 @@ public interface IModel : IDisposable
 	/// Initializes the model. This method must be called after the model is created to set up any necessary state or dependencies.
 	/// Failure to call this method may result in incorrect behavior.
 	/// </summary>
-	internal void Initialize();
+	public void Initialize();
 
 	/// <summary>
 	/// Asynchronously initializes the model. This method must be called after the model is created 
@@ -22,6 +22,6 @@ public interface IModel : IDisposable
 	/// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
 	/// It allows the operation to be canceled.</param>
 	/// <returns>A task that represents the asynchronous initialization operation.</returns>
-	internal Task InitializeAsync(CancellationToken token);
+	public Task InitializeAsync(CancellationToken token);
 }
 }

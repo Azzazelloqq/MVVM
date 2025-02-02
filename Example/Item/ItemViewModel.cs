@@ -2,6 +2,7 @@
 using MVVM.MVVM.ReactiveLibrary.Property;
 using MVVM.MVVM.System.Base.Command.Base;
 using MVVM.MVVM.System.Base.Command.Commands;
+using MVVM.MVVM.System.Base.View;
 using MVVM.MVVM.System.Base.ViewModel;
 
 namespace MVVM.MVVM.Example.Item

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Disposable;
 using MVVM.MVVM.System.Base.ViewModel;
@@ -35,9 +36,14 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
     /// It allows the operation to be canceled.</param>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync(TViewModel viewModel, CancellationToken token)
+    public async Task InitializeAsync(IViewModel viewModel, CancellationToken token)
     {
-        this.viewModel = viewModel;
+        if(viewModel is not TViewModel concreteViewModel)
+        {
+            throw new Exception($"Cannot cast {viewModel.GetType()} to {typeof(TViewModel)}");
+        }
+
+        this.viewModel = concreteViewModel;
         
         await OnInitializeAsync(token);
     }
@@ -46,9 +52,14 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// Initializes the view. This method must be called after the model is created to set up any necessary state or dependencies.
     /// Failure to call this method may result in incorrect behavior.
     /// </summary>
-    public void Initialize(TViewModel viewModel)
+    public void Initialize(IViewModel viewModel)
     {
-        this.viewModel = viewModel;
+        if(viewModel is not TViewModel concreteViewModel)
+        {
+            throw new Exception($"Cannot cast {viewModel.GetType()} to {typeof(TViewModel)}");
+        }
+
+        this.viewModel = concreteViewModel;
         
         OnInitialize();
     }

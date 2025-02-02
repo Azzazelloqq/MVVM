@@ -18,7 +18,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// The model associated with the view model.
     /// </summary>
     protected TModel model;
-    
+
     /// <summary>
     /// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
     /// </summary>
@@ -33,7 +33,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// The cancellation token source that is used to signal disposal of the viewModel.
     /// </summary>
     private readonly CancellationTokenSource _disposeCancellationSource = new();
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{TModel}"/> class with the specified model.
     /// </summary>
@@ -41,6 +41,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     public ViewModelBase(TModel model)
     {
         this.model = model;
+        
         compositeDisposable.AddDisposable(model);
     }
 
@@ -90,17 +91,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         base.Dispose();
     }
-
-    /// <summary>
-    /// Provides additional dispose logic for derived classes.
-    /// Subclasses can override this method to implement custom cleanup code
-    /// without overriding the base <see cref="Dispose"/> method.
-    /// </summary>
-    protected virtual void OnDispose()
-    {
-        // Subclasses can override this method to perform custom dispose logic.
-    }
-
+    
     /// <summary>
     /// Provides a hook for subclasses to perform custom initialization logic.
     /// This method is called by the <see cref="Initialize"/> method.
@@ -121,6 +112,16 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     protected virtual Task OnInitializeAsync(CancellationToken token)
     {
         return Task.CompletedTask;
+    }
+    
+    /// <summary>
+    /// Provides additional dispose logic for derived classes.
+    /// Subclasses can override this method to implement custom cleanup code
+    /// without overriding the base <see cref="Dispose"/> method.
+    /// </summary>
+    protected virtual void OnDispose()
+    {
+        // Subclasses can override this method to perform custom dispose logic.
     }
 }
 }
