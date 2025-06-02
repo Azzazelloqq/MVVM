@@ -1,7 +1,7 @@
-﻿using MVVM.MVVM.ReactiveLibrary.Property;
-using MVVM.MVVM.System.Base.Model;
+﻿using Azzazelloqq.MVVM.Source.Core.Model;
+using Azzazelloqq.MVVM.Source.ReactiveLibrary.Property;
 
-namespace MVVM.MVVM.Example.Item
+namespace Azzazelloqq.MVVM.Example.Item
 {
 /// <summary>
 /// The data model for a single item in the inventory.

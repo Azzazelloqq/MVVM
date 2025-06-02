@@ -1,11 +1,10 @@
 ﻿using System;
-using MVVM.MVVM.ReactiveLibrary.Property;
-using MVVM.MVVM.System.Base.Command.Base;
-using MVVM.MVVM.System.Base.Command.Commands;
-using MVVM.MVVM.System.Base.View;
-using MVVM.MVVM.System.Base.ViewModel;
+using Azzazelloqq.MVVM.Source.Core.Command.Base;
+using Azzazelloqq.MVVM.Source.Core.Command.Commands;
+using Azzazelloqq.MVVM.Source.Core.ViewModel;
+using Azzazelloqq.MVVM.Source.ReactiveLibrary.Property;
 
-namespace MVVM.MVVM.Example.Item
+namespace Azzazelloqq.MVVM.Example.Item
 {
 /// <summary>
 /// The ViewModel for a single item. 

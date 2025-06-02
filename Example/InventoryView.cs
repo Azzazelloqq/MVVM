@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using Azzazelloqq.MVVM.Example.Item;
+using Azzazelloqq.MVVM.Source.Core.View;
 using UnityEngine;
 using UnityEngine.UI;
-using MVVM.MVVM.System.Base.View;
-using MVVM.MVVM.Example.Item;
 
-namespace MVVM.MVVM.Example
+namespace Azzazelloqq.MVVM.Example
 {
 public class InventoryView : ViewMonoBehavior<InventoryViewModel>
 {

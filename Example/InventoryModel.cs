@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MVVM.MVVM.ReactiveLibrary.Collections.List;
-using MVVM.MVVM.System.Base.Model;
+using Azzazelloqq.MVVM.Source.Core.Model;
+using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.List;
 
-namespace MVVM.MVVM.Example
+namespace Azzazelloqq.MVVM.Example
 {
 public class InventoryModel : ModelBase
 {

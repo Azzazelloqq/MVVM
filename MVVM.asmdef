@@ -1,6 +1,6 @@
 {
     "name": "MVVM",
-    "rootNamespace": "MVVM",
+    "rootNamespace": "Azzazelloqq",
     "references": [
 	"Disposable"
 	],

@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using Azzazelloqq.MVVM.Source.Core.View;
+using UnityEngine;
 using UnityEngine.UI;
-using MVVM.MVVM.System.Base.View;
 
-namespace MVVM.MVVM.Example.Item
+namespace Azzazelloqq.MVVM.Example.Item
 {
 /// <summary>
 /// A Unity View for displaying a single item (name + remove button).
