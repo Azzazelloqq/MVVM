@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Disposable;
 
@@ -24,17 +25,33 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// The cancellation token source that is used to signal disposal of the model.
 	/// </summary>
 	private readonly CancellationTokenSource _disposeCancellationSource = new();
-	
+
+	private bool _isInitialized;
+
 	/// <inheritdoc/>
 	void IModel.Initialize()
 	{
+		if (_isInitialized)
+		{
+			throw new Exception("Model has already been initialized.");
+		}
+
 		OnInitialize();
+
+		_isInitialized = true;
 	}
 
 	/// <inheritdoc/>
 	async Task IModel.InitializeAsync(CancellationToken token)
 	{
+		if (_isInitialized)
+		{
+			throw new Exception("Model has already been initialized.");
+		}
+		
 		await OnInitializeAsync(token);
+		
+		_isInitialized = true;
 	}
 
 	/// <summary>
@@ -45,11 +62,9 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
 	/// It allows the operation to be canceled.</param>
 	/// <returns>A task that represents the asynchronous initialization operation.</returns>
-	protected virtual async Task OnInitializeAsync(CancellationToken token)
+	protected virtual Task OnInitializeAsync(CancellationToken token)
 	{
-		await Task.CompletedTask;
-		
-		OnInitialize();
+		return Task.CompletedTask;
 	}
 	
 	/// <summary>
@@ -67,8 +82,8 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// </summary>
 	public sealed override void Dispose()
 	{
-		OnDispose();
-
+		base.Dispose();
+		
 		if (!_disposeCancellationSource.IsCancellationRequested)
 		{
 			_disposeCancellationSource.Cancel();
@@ -77,8 +92,8 @@ public abstract class ModelBase : DisposableBase, IModel
 		_disposeCancellationSource.Dispose();
 		
 		compositeDisposable.Dispose();
-        
-		base.Dispose();
+		
+		OnDispose();
 	}
 
 	/// <summary>

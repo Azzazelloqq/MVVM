@@ -1,6 +1,6 @@
 {
   "name": "com.azzazello.mvvm",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "displayName": "MVVM",
   "description": "Simple MVVM pattern",
   "unity": "2020.3",

@@ -8,7 +8,7 @@ namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Array
 /// Represents a reactive array that notifies observers of changes.
 /// </summary>
 /// <typeparam name="T">The type of elements stored.</typeparam>
-public interface IReactiveArray<T> : IReactiveCollection<T>, IList<T>
+public interface IReactiveArray<T> : IReactiveCollection<T>, IReadOnlyList<T>
 {
 	/// <summary>
 	/// Gets the total number of elements in the array.

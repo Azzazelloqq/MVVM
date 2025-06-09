@@ -6,9 +6,9 @@
 /// </summary>
 public interface IReactiveNotifier : IReadOnlyNotifier
 {
-    /// <summary>
-    /// Triggers a notification to all subscribed listeners.
-    /// </summary>
-    public void Notify();
+	/// <summary>
+	/// Triggers a notification to all subscribed listeners.
+	/// </summary>
+	public void Notify();
 }
 }

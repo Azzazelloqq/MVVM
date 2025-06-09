@@ -28,7 +28,10 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// The cancellation token source that is used to signal disposal of the view.
     /// </summary>
     private readonly CancellationTokenSource _disposeCancellationSource = new();
-    
+
+    private bool _disposeWithViewModel;
+    private bool _isInitialized;
+
     /// <summary>
     /// Asynchronously initializes the view. This method must be called after the model is created 
     /// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
@@ -36,7 +39,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
     /// It allows the operation to be canceled.</param>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync(IViewModel viewModel, CancellationToken token)
+    public async Task InitializeAsync(IViewModel viewModel, CancellationToken token, bool disposeWithViewModel = true)
     {
         if(viewModel is not TViewModel concreteViewModel)
         {
@@ -45,15 +48,25 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
 
         this.viewModel = concreteViewModel;
         
+        _disposeWithViewModel = disposeWithViewModel;
+        viewModel.DisposeNotifier.Subscribe(OnViewModelDisposed);
+        
         await OnInitializeAsync(token);
+        
+        _isInitialized = true;
     }
     
     /// <summary>
     /// Initializes the view. This method must be called after the model is created to set up any necessary state or dependencies.
     /// Failure to call this method may result in incorrect behavior.
     /// </summary>
-    public void Initialize(IViewModel viewModel)
+    public void Initialize(IViewModel viewModel, bool disposeWithViewModel = true)
     {
+        if (_isInitialized)
+        {
+            throw new Exception("View is already initialized");
+        }
+        
         if(viewModel is not TViewModel concreteViewModel)
         {
             throw new Exception($"Cannot cast {viewModel.GetType()} to {typeof(TViewModel)}");
@@ -61,7 +74,12 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
 
         this.viewModel = concreteViewModel;
         
+        _disposeWithViewModel = disposeWithViewModel;
+        viewModel.DisposeNotifier.Subscribe(OnViewModelDisposed);
+
         OnInitialize();
+        
+        _isInitialized = true;
     }
 
     /// <summary>
@@ -73,8 +91,6 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     {
         base.Dispose();
         
-        OnDispose();
-        
         if (!_disposeCancellationSource.IsCancellationRequested)
         {
             _disposeCancellationSource.Cancel();
@@ -83,6 +99,8 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         _disposeCancellationSource.Dispose();
         
         compositeDisposable.Dispose();
+        
+        OnDispose();
     }
     
     /// <summary>
@@ -115,6 +133,16 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     protected virtual Task OnInitializeAsync(CancellationToken token)
     {
         return Task.CompletedTask;
+    }
+    
+    private void OnViewModelDisposed()
+    {
+        if (!_disposeWithViewModel)
+        {
+            return;
+        }
+        
+        Dispose();
     }
 }
 }

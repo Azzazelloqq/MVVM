@@ -1,8 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Source.Core.Model;
+using Azzazelloqq.MVVM.Source.ReactiveLibrary.Notifier;
 using Disposable;
-
+    
 namespace Azzazelloqq.MVVM.Source.Core.ViewModel
 {
 /// <summary>
@@ -13,6 +15,8 @@ namespace Azzazelloqq.MVVM.Source.Core.ViewModel
 /// <typeparam name="TModel">The type of the model associated with the view model, which implements <see cref="IModel"/>.</typeparam>
 public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where TModel : IModel
 {
+    public IReadOnlyNotifier DisposeNotifier => _disposeNotifier;
+    
     /// <summary>
     /// The model associated with the view model.
     /// </summary>
@@ -32,6 +36,9 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// The cancellation token source that is used to signal disposal of the viewModel.
     /// </summary>
     private readonly CancellationTokenSource _disposeCancellationSource = new();
+
+    private ReactiveNotifier _disposeNotifier = new ReactiveNotifier();
+    private bool _isInitialized;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{TModel}"/> class with the specified model.
@@ -54,9 +61,16 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
     public async Task InitializeAsync(CancellationToken token)
     {
+        if (_isInitialized)
+        {
+            throw new Exception("ViewModel has already been initialized.");
+        }
+        
         await model.InitializeAsync(token);
         
         await OnInitializeAsync(token);
+
+        _isInitialized = true;
     }
     
     /// <summary>
@@ -65,9 +79,16 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <param name="viewModel">The view model to associate with the view.</param>
     public void Initialize()
     {
+        if (_isInitialized)
+        {
+            throw new Exception("ViewModel has already been initialized.");
+        }
+        
         model.Initialize();
         
         OnInitialize();
+        
+        _isInitialized = true;
     }
 
     /// <summary>
@@ -77,8 +98,8 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// </summary>
     public sealed override void Dispose()
     {
-        OnDispose();
-
+        base.Dispose();
+        
         if (!_disposeCancellationSource.IsCancellationRequested)
         {
             _disposeCancellationSource.Cancel();
@@ -88,7 +109,10 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         compositeDisposable.Dispose();
         
-        base.Dispose();
+        _disposeNotifier.Notify();
+        _disposeNotifier.Dispose();
+        
+        OnDispose();
     }
     
     /// <summary>

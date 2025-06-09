@@ -32,7 +32,6 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// </summary>
 	private T[] _array;
 
-
 	private readonly ICallbacks<(T, int)> _itemChangedByIndexListeners;
 	private readonly ICallbacks<IReadOnlyList<T>> _collectionChangedListeners;
 
@@ -118,7 +117,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <inheritdoc/>
 	public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
 	{
-		_collectionChangedListeners.Subscribe(collectionChanged);
+		_collectionChangedListeners.Subscribe(collectionChanged, notifyOnSubscribe);
 	}
 
 	/// <inheritdoc/>
@@ -199,34 +198,6 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <inheritdoc/>
 	[Obsolete("An array does not support removing an element", true)]
 	public bool Remove(T item)
-	{
-		throw new Exception("An array does not support removing an element");
-	}
-
-	/// <inheritdoc/>
-	public int IndexOf(T item)
-	{
-		for (var i = 0; i < _array.Length; i++)
-		{
-			if (_array[i].Equals(item))
-			{
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	/// <inheritdoc/>
-	[Obsolete("An array does not support adding an element", true)]
-	public void Insert(int index, T item)
-	{
-		throw new Exception("An array does not support adding an element");
-	}
-
-	/// <inheritdoc/>
-	[Obsolete("An array does not support removing an element", true)]
-	public void RemoveAt(int index)
 	{
 		throw new Exception("An array does not support removing an element");
 	}
