@@ -10,20 +10,22 @@ namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks
 internal interface ICallbacks<T> : IDisposable
 {
 	/// <summary>
-	/// Subscribes to receive notifications indefinitely. If <paramref name="withNotify"/>
-	/// is <c>true</c>, the callback is immediately invoked with <paramref name="initialValue"/>.
+	/// Subscribes an action to be executed when the event is triggered.
 	/// </summary>
-	/// <param name="action">The callback to invoke when <see cref="Notify"/> is called.</param>
-	/// <param name="withNotify">
-	/// If <c>true</c>, invokes <paramref name="action"/> immediately with <paramref name="initialValue"/>.
-	/// </param>
-	/// <param name="initialValue">
-	/// The value to send to <paramref name="action"/> immediately when <paramref name="withNotify"/> is <c>true</c>.
-	/// </param>
-	/// <returns>
-	/// A <see cref="Subscription{T}"/> token that can be disposed to unsubscribe.
-	/// </returns>
-	public Subscription<T> Subscribe(Action<T> action, bool withNotify = false, T initialValue = default);
+	/// <param name="action">The action to be executed when the event occurs.</param>
+	/// <returns>A subscription object that can be used to unsubscribe from the event.</returns>
+
+	public Subscription<T> Subscribe(Action<T> action);
+	
+	/// <summary>
+	/// Subscribes an action to be executed when the event is triggered and immediately
+	/// executes the action with the provided value.
+	/// </summary>
+	/// <param name="action">The action to be executed when the event occurs.</param>
+	/// <param name="value">The initial value to pass to the action immediately after subscribing.</param>
+	/// <returns>A subscription object that can be used to unsubscribe from the event.</returns>
+
+	public Subscription<T> SubscribeWithNotify(Action<T> action, T value);
 	
 	/// <summary>
 	/// Subscribes to receive a single notification. After the first invocation,

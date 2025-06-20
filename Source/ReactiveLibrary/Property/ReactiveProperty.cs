@@ -78,7 +78,12 @@ namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Property
 				throw new ArgumentNullException(nameof(onValueChanged));
 			}
 
-			return _callbacks.Subscribe(onValueChanged, withNotify);
+			if (withNotify)
+			{
+				return _callbacks.SubscribeWithNotify(onValueChanged, Value);
+			}
+
+			return _callbacks.Subscribe(onValueChanged);
 		}
 
 		/// <inheritdoc/>

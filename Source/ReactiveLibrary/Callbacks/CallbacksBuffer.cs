@@ -28,27 +28,15 @@ internal class CallbackBuffer<T> : ICallbacks<T>
 	}
 
 	/// <inheritdoc/>
-	public Subscription<T> Subscribe(Action<T> action, bool withNotify = false, T initialValue = default)
+	public Subscription<T> Subscribe(Action<T> action)
 	{
-		if (action == null)
-		{
-			throw new ArgumentNullException(nameof(action));
-		}
+		return Subscribe(action, false);
+	}
 
-		lock (_lock)
-		{
-			_callbacks ??= new List<Action<T>>(_callbacksCapacity);
-
-			_callbacks.Add(action);
-			_cacheVersion++;
-		}
-
-		if (withNotify)
-		{
-			action(initialValue);
-		}
-
-		return new Subscription<T>(this, action);
+	/// <inheritdoc/>
+	public Subscription<T> SubscribeWithNotify(Action<T> action, T value)
+	{
+		return Subscribe(action, true, value);
 	}
 
 	/// <inheritdoc/>
@@ -184,6 +172,38 @@ internal class CallbackBuffer<T> : ICallbacks<T>
 		{
 			onceCopy[i](value);
 		}
+	}
+	
+	/// <summary>
+	/// Internal implementation of the subscription mechanism.
+	/// Subscribes an action to be executed when the event is triggered.
+	/// </summary>
+	/// <param name="action">The action to be executed when the event occurs.</param>
+	/// <param name="withNotify">If true, immediately executes the action with the provided value.</param>
+	/// <param name="value">The value to pass to the action if withNotify is true. Default value is used if not specified.</param>
+	/// <returns>A subscription object that can be used to unsubscribe from the event.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when action is null.</exception>
+	private Subscription<T> Subscribe(Action<T> action, bool withNotify, T value = default)
+	{
+		if (action == null)
+		{
+			throw new ArgumentNullException(nameof(action));
+		}
+
+		lock (_lock)
+		{
+			_callbacks ??= new List<Action<T>>(_callbacksCapacity);
+
+			_callbacks.Add(action);
+			_cacheVersion++;
+		}
+
+		if (withNotify)
+		{
+			action(value);
+		}
+
+		return new Subscription<T>(this, action);
 	}
 
 	private void ClearAllData()

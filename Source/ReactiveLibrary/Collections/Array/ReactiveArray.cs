@@ -117,7 +117,14 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <inheritdoc/>
 	public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
 	{
-		_collectionChangedListeners.Subscribe(collectionChanged, notifyOnSubscribe);
+		if (notifyOnSubscribe)
+		{
+			_collectionChangedListeners.SubscribeWithNotify(collectionChanged, _array);
+		}
+		else
+		{
+			_collectionChangedListeners.Subscribe(collectionChanged);
+		}
 	}
 
 	/// <inheritdoc/>
