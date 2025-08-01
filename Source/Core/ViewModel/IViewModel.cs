@@ -1,6 +1,6 @@
-﻿using Azzazelloqq.MVVM.Source.ReactiveLibrary.Notifier;
+﻿using Azzazelloqq.MVVM.ReactiveLibrary;
 
-namespace Azzazelloqq.MVVM.Source.Core.ViewModel
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents a basic view model in the MVVM architecture. 

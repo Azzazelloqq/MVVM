@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 //todo:It’s worth considering using IReadOnly collections instead of IEnumerable.
 /// <summary>

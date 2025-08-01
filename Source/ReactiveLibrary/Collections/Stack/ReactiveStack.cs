@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Stack
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive stack that provides notifications for operations such as pushing, popping, 

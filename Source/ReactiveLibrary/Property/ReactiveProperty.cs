@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Property
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 	/// <summary>
 	/// Represents a reactive property that supports both reading and setting the value,

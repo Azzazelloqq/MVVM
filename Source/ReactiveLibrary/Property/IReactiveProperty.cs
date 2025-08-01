@@ -1,4 +1,4 @@
-﻿namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Property
+﻿namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a reactive property that allows both reading and setting its value.

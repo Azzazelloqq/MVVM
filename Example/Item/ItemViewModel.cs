@@ -1,8 +1,8 @@
 ﻿using System;
-using Azzazelloqq.MVVM.Source.Core.Command.Base;
-using Azzazelloqq.MVVM.Source.Core.Command.Commands;
-using Azzazelloqq.MVVM.Source.Core.ViewModel;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Property;
+using System.Threading;
+using System.Threading.Tasks;
+using Azzazelloqq.MVVM.Core;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 
 namespace Azzazelloqq.MVVM.Example.Item
 {
@@ -10,7 +10,7 @@ namespace Azzazelloqq.MVVM.Example.Item
 /// The ViewModel for a single item. 
 /// Demonstrates a callback approach to remove this item from the parent Inventory.
 /// </summary>
-public class ItemViewModel : ViewModelBase<ItemModel>
+internal class ItemViewModel : ViewModelBase<ItemModel>
 {
 	public IReadOnlyReactiveProperty<string> ItemName => model.ItemName;
 	public IActionCommand RemoveItemCommand { get; }
@@ -25,10 +25,23 @@ public class ItemViewModel : ViewModelBase<ItemModel>
 		RemoveItemCommand = new ActionCommand(OnRemoveItem);
 	}
 
+	protected override void OnInitialize()
+	{
+	}
+
+	protected override ValueTask OnInitializeAsync(CancellationToken token)
+	{
+		return default;
+	}
+
 	protected override void OnDispose()
 	{
 		RemoveItemCommand.Dispose();
-		base.OnDispose();
+	}
+
+	protected override ValueTask OnDisposeAsync(CancellationToken token)
+	{
+		return default;
 	}
 
 	private void OnRemoveItem()

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Base
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// A base interface for reactive objects, providing a mechanism for releasing resources

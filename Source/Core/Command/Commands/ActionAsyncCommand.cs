@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azzazelloqq.MVVM.Source.Core.Command.Base;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Property;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 
-namespace Azzazelloqq.MVVM.Source.Core.Command.Commands
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents an asynchronous command that can be executed with an action.

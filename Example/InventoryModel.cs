@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Azzazelloqq.MVVM.Source.Core.Model;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.List;
+using Azzazelloqq.MVVM.Core;
+using Azzazelloqq.MVVM.ReactiveLibrary.Collections;
 
 namespace Azzazelloqq.MVVM.Example
 {
-public class InventoryModel : ModelBase
+internal class InventoryModel : ModelBase
 {
 	/// <summary>
 	/// Reactive list of item names. 
@@ -65,13 +65,26 @@ public class InventoryModel : ModelBase
 		Items.Remove(item);
 	}
 
+	protected override ValueTask OnInitializeAsync(CancellationToken token)
+	{
+		return default;
+	}
+
+	protected override void OnInitialize()
+	{
+	}
+
 	/// <summary>
 	/// Called when the model is disposed. Dispose reactive lists and other resources here.
 	/// </summary>
 	protected override void OnDispose()
 	{
-		base.OnDispose();
 		Items.Dispose();
+	}
+
+	protected override ValueTask OnDisposeAsync(CancellationToken token)
+	{
+		return default;
 	}
 }
 }

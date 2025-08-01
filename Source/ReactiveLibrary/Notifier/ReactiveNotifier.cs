@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Notifier
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a reactive notifier that allows for subscription to notifications and triggers those notifications

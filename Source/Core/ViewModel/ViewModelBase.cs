@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azzazelloqq.MVVM.Source.Core.Model;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Notifier;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 using Disposable;
-    
-namespace Azzazelloqq.MVVM.Source.Core.ViewModel
+
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents the base class for view models in the MVVM architecture.
@@ -37,7 +36,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// </summary>
     private readonly CancellationTokenSource _disposeCancellationSource = new();
 
-    private ReactiveNotifier _disposeNotifier = new ReactiveNotifier();
+    private readonly ReactiveNotifier _disposeNotifier = new ReactiveNotifier();
     private bool _isInitialized;
 
     /// <summary>
@@ -72,11 +71,10 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
 
         _isInitialized = true;
     }
-    
+
     /// <summary>
     /// Initializes the view with the specified view model.
     /// </summary>
-    /// <param name="viewModel">The view model to associate with the view.</param>
     public void Initialize()
     {
         if (_isInitialized)
@@ -96,9 +94,11 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// This method should be called when the object is no longer needed,
     /// and it will automatically call <see cref="OnDispose"/> for additional cleanup logic in derived classes.
     /// </summary>
-    public sealed override void Dispose()
+    protected sealed override void Dispose(bool disposing)
     {
-        base.Dispose();
+        base.Dispose(disposing);
+        
+        OnDispose();
         
         if (!_disposeCancellationSource.IsCancellationRequested)
         {
@@ -112,18 +112,33 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         _disposeNotifier.Notify();
         _disposeNotifier.Dispose();
         
-        OnDispose();
     }
+
+    public sealed override async ValueTask DisposeAsync(CancellationToken token, bool continueOnCapturedContext = false)
+    {
+        await base.DisposeAsync(token, continueOnCapturedContext);
+        
+        await OnDisposeAsync(token);
+        
+        if (!_disposeCancellationSource.IsCancellationRequested)
+        {
+            _disposeCancellationSource.Cancel();
+        }
+		
+        _disposeCancellationSource.Dispose();
+        
+        await compositeDisposable.DisposeAsync(token);
+        
+        _disposeNotifier.Notify();
+        _disposeNotifier.Dispose();
+    } 
     
     /// <summary>
     /// Provides a hook for subclasses to perform custom initialization logic.
     /// This method is called by the <see cref="Initialize"/> method.
     /// </summary>
-    protected virtual void OnInitialize()
-    {
-        // Subclasses can override this method to perform custom initialization logic.
-    }
-    
+    protected abstract void OnInitialize();
+
     /// <summary>
     /// Provides a hook for subclasses to perform custom asynchronous initialization logic.
     /// This method is called by the <see cref="InitializeAsync(CancellationToken)"/> method.
@@ -132,19 +147,15 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
     /// It allows the operation to be canceled.</param>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
-    protected virtual Task OnInitializeAsync(CancellationToken token)
-    {
-        return Task.CompletedTask;
-    }
-    
+    protected abstract ValueTask OnInitializeAsync(CancellationToken token);
+
     /// <summary>
     /// Provides additional dispose logic for derived classes.
     /// Subclasses can override this method to implement custom cleanup code
     /// without overriding the base <see cref="Dispose"/> method.
     /// </summary>
-    protected virtual void OnDispose()
-    {
-        // Subclasses can override this method to perform custom dispose logic.
-    }
+    protected abstract void OnDispose();
+    
+    protected abstract ValueTask OnDisposeAsync(CancellationToken token);
 }
 }

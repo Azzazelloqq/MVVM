@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.List
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive list that provides event notifications when items are added, removed, or changed.

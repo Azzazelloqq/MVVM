@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Callbacks
 {
 /// <summary>
 /// Defines a buffer of callbacks that can be subscribed to, unsubscribed from,

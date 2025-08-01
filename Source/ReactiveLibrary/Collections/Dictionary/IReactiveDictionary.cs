@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Dictionary
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive dictionary that supports event notifications for changes in the dictionary
 /// and provides additional methods for working with key-value pairs.
-/// Inherits from <see cref="IReactiveCollection{T}"/> and <see cref="IDictionary{TKey, TValue}"/>.
+/// Inherits from <see cref="IReactiveCollection{T}"/> and <see cref="IDictionary{TKey,TValue}"/>.
 /// </summary>
 /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
 /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>

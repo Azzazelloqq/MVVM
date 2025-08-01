@@ -1,7 +1,6 @@
 ﻿using System;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Base;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Notifier
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a read-only notifier that allows subscription to notifications without providing a mechanism to trigger them.

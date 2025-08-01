@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Array
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// A reactive array class that provides reactive notifications when elements are modified. 
@@ -74,7 +73,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 			return;
 		}
 
-		_array = global::System.Array.Empty<T>();
+		_array = Array.Empty<T>();
 		IsDisposed = true;
 	}
 
@@ -179,7 +178,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 
 	public void Clear()
 	{
-		_array = global::System.Array.Empty<T>();
+		_array = Array.Empty<T>();
 		NotifyCollectionChanged();
 	}
 
@@ -224,25 +223,25 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <inheritdoc/>
 	public int BinarySearch(int index, int length, T value)
 	{
-		return global::System.Array.BinarySearch(_array, index, length, value);
+		return Array.BinarySearch(_array, index, length, value);
 	}
 
 	/// <inheritdoc/>
 	public int BinarySearch(int index, int length, T value, IComparer<T> comparer)
 	{
-		return global::System.Array.BinarySearch(_array, index, length, value, comparer);
+		return Array.BinarySearch(_array, index, length, value, comparer);
 	}
 
 	/// <inheritdoc/>
 	public int BinarySearch(T value)
 	{
-		return global::System.Array.BinarySearch(_array, value);
+		return Array.BinarySearch(_array, value);
 	}
 
 	/// <inheritdoc/>
 	public int BinarySearch(T value, IComparer<T> comparer)
 	{
-		return global::System.Array.BinarySearch(_array, value, comparer);
+		return Array.BinarySearch(_array, value, comparer);
 	}
 
 	/// <inheritdoc/>
@@ -257,62 +256,62 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	/// <inheritdoc/>
 	public void Sort()
 	{
-		global::System.Array.Sort(_array);
+		Array.Sort(_array);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public void Sort(IComparer<T> comparer)
 	{
-		global::System.Array.Sort(_array, comparer);
+		Array.Sort(_array, comparer);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public void Sort(Comparison<T> comparison)
 	{
-		global::System.Array.Sort(_array, comparison);
+		Array.Sort(_array, comparison);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public void Sort(int index, int length)
 	{
-		global::System.Array.Sort(_array, index, length);
+		Array.Sort(_array, index, length);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public void Sort(int index, int length, IComparer<T> comparer)
 	{
-		global::System.Array.Sort(_array, index, length, comparer);
+		Array.Sort(_array, index, length, comparer);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public void Reverse()
 	{
-		global::System.Array.Reverse(_array);
+		Array.Reverse(_array);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public void Reverse(int index, int length)
 	{
-		global::System.Array.Reverse(_array, index, length);
+		Array.Reverse(_array, index, length);
 		NotifyCollectionChanged();
 	}
 
 	/// <inheritdoc/>
 	public T FindLast(Predicate<T> match)
 	{
-		return global::System.Array.FindLast(_array, match);
+		return Array.FindLast(_array, match);
 	}
 
 	/// <inheritdoc/>
 	public T Find(Predicate<T> match)
 	{
-		return global::System.Array.Find(_array, match);
+		return Array.Find(_array, match);
 	}
 
 	/// <inheritdoc/>

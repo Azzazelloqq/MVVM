@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Azzazelloqq.MVVM.Source.Core.Command.Base
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents a simple asynchronous command that can be executed.

@@ -1,4 +1,4 @@
-﻿namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Notifier
+﻿namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a reactive notifier that allows triggering notifications.

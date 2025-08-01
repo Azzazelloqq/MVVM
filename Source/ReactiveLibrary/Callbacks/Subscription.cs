@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Callbacks
 {
 /// <summary>
 /// Token returned by <see cref="ICallbacks{T}.Subscribe"/> for disposing the subscription without heap allocation.

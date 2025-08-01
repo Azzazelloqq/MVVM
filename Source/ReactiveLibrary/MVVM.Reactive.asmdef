@@ -1,8 +1,9 @@
 {
-    "name": "MVVM",
+    "name": "MVVM.Reactive",
     "rootNamespace": "Azzazelloqq",
-    "references": [
-	"Disposable"
+    "references":
+    [
+        "Disposable"
 	],
     "includePlatforms": [],
     "excludePlatforms": [],

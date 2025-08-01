@@ -1,8 +1,7 @@
 ﻿using System;
-using Azzazelloqq.MVVM.Source.Core.Command.Base;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Property;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 
-namespace Azzazelloqq.MVVM.Source.Core.Command.Commands
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents a command that can be executed with an action.

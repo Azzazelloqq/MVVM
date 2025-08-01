@@ -1,4 +1,4 @@
-﻿namespace Azzazelloqq.MVVM.Source.Core.Command.Base
+﻿namespace Azzazelloqq.MVVM.Core
 {
 public interface IRelayCommand<in T> : ICommand
 {

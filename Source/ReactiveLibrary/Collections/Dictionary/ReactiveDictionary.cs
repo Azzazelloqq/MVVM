@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Dictionary
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// A reactive dictionary that provides notifications for additions, removals, and updates of key-value pairs.

@@ -1,5 +1,7 @@
-﻿using Azzazelloqq.MVVM.Source.Core.Model;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Property;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Azzazelloqq.MVVM.Core;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 
 namespace Azzazelloqq.MVVM.Example.Item
 {
@@ -7,7 +9,7 @@ namespace Azzazelloqq.MVVM.Example.Item
 /// The data model for a single item in the inventory.
 /// Holds a reactive property for the item's name.
 /// </summary>
-public class ItemModel : ModelBase
+internal class ItemModel : ModelBase
 {
 	public IReadOnlyReactiveProperty<string> ItemName { get; }
 
@@ -16,10 +18,23 @@ public class ItemModel : ModelBase
 		ItemName = new ReactiveProperty<string>(itemName);
 	}
 
+	protected override ValueTask OnInitializeAsync(CancellationToken token)
+	{
+		return default;
+	}
+
+	protected override void OnInitialize()
+	{
+	}
+
 	protected override void OnDispose()
 	{
 		ItemName.Dispose();
-		base.OnDispose();
+	}
+
+	protected override ValueTask OnDisposeAsync(CancellationToken token)
+	{
+		return default;
 	}
 }
 }

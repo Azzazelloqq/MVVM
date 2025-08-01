@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Azzazelloqq.MVVM.Source.Core.Model
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents a basic model in the MVVM architecture. Serves as a marker interface for all models.

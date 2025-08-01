@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.List
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive list that provides notifications for additions, removals, and changes to elements.

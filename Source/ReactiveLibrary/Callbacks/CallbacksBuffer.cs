@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Callbacks
 {
 /// <summary>
 /// Implements <see cref="ICallbacks{T}"/> by maintaining a list of callback actions,

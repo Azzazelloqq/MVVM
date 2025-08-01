@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Azzazelloqq.MVVM.Source.Core.Command.Base
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents an asynchronous command that can be executed with a parameter of type <typeparamref name="T"/>.

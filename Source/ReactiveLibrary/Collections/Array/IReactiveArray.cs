@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Array
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive array that notifies observers of changes.

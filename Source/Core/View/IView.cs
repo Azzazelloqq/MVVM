@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azzazelloqq.MVVM.Source.Core.ViewModel;
 
-namespace Azzazelloqq.MVVM.Source.Core.View
+namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents a basic view in the MVVM architecture. Serves as a marker interface for all views.

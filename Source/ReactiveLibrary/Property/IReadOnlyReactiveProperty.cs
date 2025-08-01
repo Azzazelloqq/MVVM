@@ -1,8 +1,7 @@
 ﻿using System;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Base;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Callbacks;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Property
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a read-only reactive property that allows subscribing to value changes.

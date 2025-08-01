@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Azzazelloqq.MVVM.Core;
 using Azzazelloqq.MVVM.Example.Item;
-using Azzazelloqq.MVVM.Source.Core.View;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Azzazelloqq.MVVM.Example
 {
-public class InventoryView : ViewMonoBehavior<InventoryViewModel>
+internal class InventoryView : ViewMonoBehavior<InventoryViewModel>
 {
 	[SerializeField]
 	private InputField _newItemInput;
@@ -27,8 +30,6 @@ public class InventoryView : ViewMonoBehavior<InventoryViewModel>
 
 	protected override void OnInitialize()
 	{
-		base.OnInitialize();
-
 		// Subscribe to Unity UI events
 		_newItemInput.onValueChanged.AddListener(OnNewItemInputChanged);
 		_addItemButton.onClick.AddListener(OnAddItemButtonClicked);
@@ -44,6 +45,16 @@ public class InventoryView : ViewMonoBehavior<InventoryViewModel>
 		// Subscribe to new item additions
 		viewModel.Items.SubscribeOnItemAdded(CreateItemView);
 		// You could also subscribeOnItemRemoved if you want to remove from UI automatically
+	}
+
+	protected override ValueTask OnInitializeAsync(CancellationToken token)
+	{
+		throw new NotImplementedException();
+	}
+
+	protected override ValueTask OnDisposeAsync(CancellationToken token)
+	{
+		throw new NotImplementedException();
 	}
 
 	protected override void OnDispose()
@@ -67,8 +78,6 @@ public class InventoryView : ViewMonoBehavior<InventoryViewModel>
 		}
 
 		_itemViews.Clear();
-
-		base.OnDispose();
 	}
 
 	private void InitializeItemViews()

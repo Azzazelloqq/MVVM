@@ -1,6 +1,6 @@
-﻿using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
+﻿using System;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Stack
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive stack that provides event notifications for operations such as pushing, popping, 

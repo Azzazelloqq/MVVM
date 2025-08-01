@@ -1,4 +1,4 @@
-﻿namespace Azzazelloqq.MVVM.Source.Core.Command.Base
+﻿namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
 /// Represents a simple command that can be executed.

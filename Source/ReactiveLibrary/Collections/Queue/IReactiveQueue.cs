@@ -1,7 +1,6 @@
 ﻿using System;
-using Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Base;
 
-namespace Azzazelloqq.MVVM.Source.ReactiveLibrary.Collections.Queue
+namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
 /// <summary>
 /// Represents a reactive queue that supports event notifications for enqueuing and dequeuing items.
