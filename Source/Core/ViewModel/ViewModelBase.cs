@@ -29,12 +29,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <summary>
     /// Gets the cancellation token that is triggered when the viewModel is disposed.
     /// </summary>
-    protected CancellationToken disposeToken => _disposeCancellationSource.Token;
-	
-    /// <summary>
-    /// The cancellation token source that is used to signal disposal of the viewModel.
-    /// </summary>
-    private readonly CancellationTokenSource _disposeCancellationSource = new();
+    protected CancellationToken disposeToken => disposeCancellationToken;
 
     private readonly ReactiveNotifier _disposeNotifier = new ReactiveNotifier();
     private bool _isInitialized;
@@ -100,13 +95,6 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         OnDispose();
         
-        if (!_disposeCancellationSource.IsCancellationRequested)
-        {
-            _disposeCancellationSource.Cancel();
-        }
-		
-        _disposeCancellationSource.Dispose();
-        
         compositeDisposable.Dispose();
         
         _disposeNotifier.Notify();
@@ -119,13 +107,6 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         await base.DisposeAsync(token, continueOnCapturedContext);
         
         await OnDisposeAsync(token);
-        
-        if (!_disposeCancellationSource.IsCancellationRequested)
-        {
-            _disposeCancellationSource.Cancel();
-        }
-		
-        _disposeCancellationSource.Dispose();
         
         await compositeDisposable.DisposeAsync(token);
         

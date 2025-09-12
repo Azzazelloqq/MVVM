@@ -103,11 +103,14 @@ namespace Azzazelloqq.MVVM.Tests
         [Test]
         public void DisposeToken_WhenDisposed_ShouldBeCanceled()
         {
+            // Arrange
+            var token = _testModel.DisposeToken;
+            
             // Act
             _testModel.Dispose();
 
             // Assert
-            Assert.IsTrue(_testModel.DisposeToken.IsCancellationRequested, 
+            Assert.IsTrue(token.IsCancellationRequested, 
                 "Dispose token should be canceled when model is disposed");
         }
 
@@ -116,12 +119,13 @@ namespace Azzazelloqq.MVVM.Tests
         {
             // Arrange
             using var cts = new CancellationTokenSource();
+            var token = _testModel.DisposeToken;
 
             // Act
             await _testModel.DisposeAsync(cts.Token);
 
             // Assert
-            Assert.IsTrue(_testModel.DisposeToken.IsCancellationRequested, 
+            Assert.IsTrue(token.IsCancellationRequested, 
                 "Dispose token should be canceled when model is disposed asynchronously");
         }
 

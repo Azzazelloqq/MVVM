@@ -21,17 +21,12 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// <summary>
     /// Gets the cancellation token that is triggered when the view is disposed.
     /// </summary>
-    protected CancellationToken disposeToken => _disposeCancellationSource.Token;
+    protected CancellationToken disposeToken => disposeCancellationToken;
 	
     /// <summary>
     /// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
     /// </summary>
     protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
-    
-    /// <summary>
-    /// The cancellation token source that is used to signal disposal of the view.
-    /// </summary>
-    private readonly CancellationTokenSource _disposeCancellationSource = new();
 
     private bool _disposeWithViewModel;
     private bool _isInitialized;
@@ -97,15 +92,13 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         
         OnDispose();
         
-        if (!_disposeCancellationSource.IsCancellationRequested)
-        {
-            _disposeCancellationSource.Cancel();
-        }
-		
-        _disposeCancellationSource.Dispose();
-        
         compositeDisposable.Dispose();
         
+        // Unsubscribe from ViewModel's dispose notifier if it was initialized
+        if (viewModel != null)
+        {
+            viewModel.DisposeNotifier.Unsubscribe(OnViewModelDisposed);
+        }
     }
     
     public sealed override async ValueTask DisposeAsync(CancellationToken token, bool continueOnCapturedContext = false)
@@ -114,14 +107,13 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
 		
         await OnDisposeAsync(token);
 		
-        if (!_disposeCancellationSource.IsCancellationRequested)
-        {
-            _disposeCancellationSource.Cancel();
-        }
-		
         await compositeDisposable.DisposeAsync(token);
         
-        _disposeCancellationSource.Dispose();
+        // Unsubscribe from ViewModel's dispose notifier if it was initialized
+        if (viewModel != null)
+        {
+            viewModel.DisposeNotifier.Unsubscribe(OnViewModelDisposed);
+        }
     }
     
     /// <summary>
