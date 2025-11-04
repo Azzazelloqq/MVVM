@@ -3,18 +3,14 @@ using System.Collections.Generic;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
-//todo:It’s worth considering using IReadOnly collections instead of IEnumerable.
+//todo:It's worth considering using IReadOnly collections instead of IEnumerable.
 /// <summary>
 /// Represents a reactive collection that supports read-only access and reactive event notifications for changes.
+/// Inherits from <see cref="IReactive"/>.
 /// </summary>
 /// <typeparam name="T">The type of elements in the collection.</typeparam>
-public interface IReadOnlyReactiveCollection<out T> : IEnumerable<T>, IDisposable
+public interface IReadOnlyReactiveCollection<out T> : IEnumerable<T>, IReactive
 {
-	/// <summary>
-	/// Gets a value indicating whether the collection has been disposed.
-	/// </summary>
-	public bool IsDisposed { get; }
-
 	/// <summary>
 	/// Subscribes to notifications when an item is added to the collection.
 	/// </summary>
