@@ -18,23 +18,28 @@ internal class InventoryViewModel : ViewModelBase<InventoryModel>
 
 	public InventoryViewModel(InventoryModel model) : base(model)
 	{
-		// Initialize the reactive list of item viewmodels
+		// Initialize the reactive list of item viewmodels and add to composite for disposal
 		Items = new ReactiveList<ItemViewModel>(model.Items.Count);
+		Items.AddTo(compositeDisposable);
 
 		// Property for name of new item
 		NewItemName = new ReactiveProperty<string>();
+		NewItemName.AddTo(compositeDisposable);
 
 		// A RelayCommand to add items, with a basic canExecute check that it's not empty
 		AddItemCommand = new RelayCommand<string>(
 			OnAddItemCommandExecute,
 			CanAddItemCommandExecute
 		);
+		AddItemCommand.AddTo(compositeDisposable);
 
 		// A RelayCommand to remove items by name
 		RemoveItemCommand = new RelayCommand<string>(model.RemoveItem);
+		RemoveItemCommand.AddTo(compositeDisposable);
 
 		// An AsyncRelayCommand to load inventory from a path
 		LoadInventoryCommand = new AsyncRelayCommand<string>(OnLoadInventoryCommandExecuteAsync);
+		LoadInventoryCommand.AddTo(compositeDisposable);
 	}
 
 	protected override void OnInitialize()
@@ -42,12 +47,13 @@ internal class InventoryViewModel : ViewModelBase<InventoryModel>
 		// Populate from the existing model list
 		InitializeItemsFromModel();
 
-		// Subscribe to model list changes
+		// Subscribe to model list changes and add to composite disposable using AddTo extension
 		model.Items.SubscribeOnItemAdded(OnItemAdded);
 		model.Items.SubscribeOnItemRemoved(OnItemRemoved);
 
-		// Also subscribe to NewItemName changes to refresh canExecute (optional)
-		NewItemName.Subscribe(_ => RaiseAddItemCanExecuteChanged());
+		// Subscribe to NewItemName changes using AddTo for automatic disposal
+		NewItemName.Subscribe(_ => RaiseAddItemCanExecuteChanged())
+			.AddTo(compositeDisposable);
 	}
 
 	protected override async ValueTask OnInitializeAsync(CancellationToken token)
@@ -61,12 +67,7 @@ internal class InventoryViewModel : ViewModelBase<InventoryModel>
 		model.Items.UnsubscribeOnItemAdded(OnItemAdded);
 		model.Items.UnsubscribeOnItemRemoved(OnItemRemoved);
 
-		// Dispose reactive properties and commands
-		NewItemName.Dispose();
-		AddItemCommand.Dispose();
-		RemoveItemCommand.Dispose();
-		LoadInventoryCommand.Dispose();
-		Items.Dispose();
+		// All disposables added with AddTo are automatically disposed by compositeDisposable in base class
 	}
 
 	protected override ValueTask OnDisposeAsync(CancellationToken token)
