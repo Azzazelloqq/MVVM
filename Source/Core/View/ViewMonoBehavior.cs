@@ -115,6 +115,28 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
             viewModel.DisposeNotifier.Unsubscribe(OnViewModelDisposed);
         }
     }
+
+    /// <summary>
+    /// Adds a disposable resource to the composite disposable associated with this view.
+    /// This ensures that the disposable resource will be properly disposed of when the view is disposed.
+    /// </summary>
+    /// <param name="disposable">The disposable resource to be added to the composite disposable.</param>
+    protected void AddDisposable(IDisposable disposable)
+    {
+        compositeDisposable.AddDisposable(disposable);
+    }
+
+    /// <summary>
+    /// Adds an asynchronous disposable object to the composite disposable collection.
+    /// This ensures the object is properly disposed when the composite disposable is disposed.
+    /// </summary>
+    /// <param name="disposable">An object that implements <see cref="IAsyncDisposable"/> to be added
+    /// to the composite disposable collection for managed disposal.</param>
+    protected void AddDisposable(IAsyncDisposable disposable)
+    {
+        compositeDisposable.AddDisposable(disposable);
+    }
+
     
     /// <summary>
     /// Provides a hook for subclasses to perform custom initialization logic.
