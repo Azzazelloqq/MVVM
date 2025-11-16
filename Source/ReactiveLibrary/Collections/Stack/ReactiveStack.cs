@@ -213,6 +213,11 @@ public class ReactiveStack<T> : IReactiveStack<T>
     /// <inheritdoc/>
     public void Push(T item)
     {
+        if (IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(ReactiveStack<T>));
+        }
+        
         _stack.Push(item);
         
         NotifyItemAdded(item);

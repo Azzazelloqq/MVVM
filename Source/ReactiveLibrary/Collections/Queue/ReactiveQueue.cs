@@ -202,7 +202,7 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     /// <inheritdoc/>
     public object Clone()
     {
-        var clone = new Queue<T>(_queue);
+        var clone = new ReactiveQueue<T>(_queue);
         
         return clone;
     }
@@ -221,6 +221,11 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     /// <inheritdoc/>
     public void Enqueue(T item)
     {
+        if (IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(ReactiveQueue<T>));
+        }
+        
         _queue.Enqueue(item);
         
         NotifyItemAdded(item);

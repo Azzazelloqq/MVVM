@@ -285,6 +285,11 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	/// <inheritdoc/>
 	public void Add(TKey key, TValue value)
 	{
+		if (IsDisposed)
+		{
+			throw new ObjectDisposedException(nameof(ReactiveDictionary<TKey, TValue>));
+		}
+		
 		_dictionary.Add(key, value);
 
 		NotifyItemAdded(new KeyValuePair<TKey, TValue>(key, value));
@@ -324,6 +329,11 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 		get => _dictionary[key];
 		set
 		{
+			if (IsDisposed)
+			{
+				throw new ObjectDisposedException(nameof(ReactiveDictionary<TKey, TValue>));
+			}
+			
 			var containsKey = _dictionary.ContainsKey(key);
 			_dictionary[key] = value;
 			var keyValuePair = new KeyValuePair<TKey, TValue>(key, value);
@@ -331,10 +341,12 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 			if (containsKey)
 			{
 				NotifyValueChangedByKey(keyValuePair);
+				NotifyCollectionChanged();
 			}
 			else
 			{
 				NotifyItemAdded(keyValuePair);
+				NotifyValueChangedByKey(keyValuePair);
 				NotifyCollectionChanged();
 			}
 		}

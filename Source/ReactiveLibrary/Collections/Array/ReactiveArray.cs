@@ -214,6 +214,11 @@ public class ReactiveArray<T> : IReactiveArray<T>
 		get => _array[index];
 		set
 		{
+			if (IsDisposed)
+			{
+				throw new ObjectDisposedException(nameof(ReactiveArray<T>));
+			}
+			
 			_array[index] = value;
 			NotifyItemChangedByIndex(value, index);
 			NotifyCollectionChanged();

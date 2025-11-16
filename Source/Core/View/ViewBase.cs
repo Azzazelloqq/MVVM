@@ -24,7 +24,7 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
     protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
     
     /// <summary>
-    /// Gets the cancellation token that is triggered when the view is disposed.
+    /// Gets the cancellation token triggered when the view is disposed.
     /// </summary>
     protected CancellationToken disposeToken => disposeCancellationToken;
 

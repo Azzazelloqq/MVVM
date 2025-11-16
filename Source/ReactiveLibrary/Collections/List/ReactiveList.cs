@@ -384,6 +384,11 @@ public class ReactiveList<T> : IReactiveList<T>
     /// <inheritdoc/>
     public void Add(T item)
     {
+        if (IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(ReactiveList<T>));
+        }
+        
         _list.Add(item);
         
         NotifyItemAdded(item);
