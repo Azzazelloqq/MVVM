@@ -145,7 +145,28 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
     /// without overriding the base <see cref="Dispose"/> method.
     /// </summary>
     protected abstract void OnDispose();
-    
+
+    /// <summary>
+    /// Adds a disposable resource to the composite disposable managed by the view.
+    /// This ensures the resource is correctly disposed when the view is disposed.
+    /// </summary>
+    /// <param name="disposable">The disposable resource to add to the composite.</param>
+    protected void AddDisposable(IDisposable disposable)
+    {
+        compositeDisposable.AddDisposable(disposable);
+    }
+
+    /// <summary>
+    /// Adds an asynchronously disposable resource to the composite disposable container, ensuring its disposal
+    /// when the view's lifecycle ends. This method is typically used to manage the lifetime of async disposables
+    /// created within the view.
+    /// </summary>
+    /// <param name="disposable">The asynchronously disposable resource to add to the composite disposable container.</param>
+    protected void AddDisposable(IAsyncDisposable disposable)
+    {
+        compositeDisposable.AddDisposable(disposable);
+    }
+
     private void OnViewModelDisposed()
     {
         if (!_disposeWithViewModel)

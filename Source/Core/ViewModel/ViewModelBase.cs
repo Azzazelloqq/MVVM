@@ -112,7 +112,26 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         _disposeNotifier.Notify();
         _disposeNotifier.Dispose();
-    } 
+    }
+
+    /// <summary>
+    /// Adds a disposable resource to the collection of disposables managed by the view model.
+    /// </summary>
+    /// <param name="disposable">The disposable resource to be added to the composite disposable managed by the view model.</param>
+    protected void AddDisposable(IDisposable disposable)
+    {
+        compositeDisposable.AddDisposable(disposable);
+    }
+
+    /// <summary>
+    /// Adds an asynchronous disposable resource to the composite disposable collection of the view model.
+    /// </summary>
+    /// <param name="disposable">The asynchronous disposable resource to add to the collection.</param>
+    protected void AddDisposable(IAsyncDisposable disposable)
+    {
+        compositeDisposable.AddDisposable(disposable);
+    }
+
     
     /// <summary>
     /// Provides a hook for subclasses to perform custom initialization logic.
