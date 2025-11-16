@@ -32,7 +32,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	private T[] _array;
 
 	private readonly ICallbacks<(T, int)> _itemChangedByIndexListeners;
-	private readonly ICallbacks<IReadOnlyList<T>> _collectionChangedListeners;
+	private readonly ICallbacks<IEnumerable<T>> _collectionChangedListeners;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="ReactiveArray{T}"/> class with a specified length 
@@ -44,7 +44,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 	{
 		_array = new T[length];
 		_itemChangedByIndexListeners = new CallbackBuffer<(T, int)>(listenersCapacity);
-		_collectionChangedListeners = new CallbackBuffer<IReadOnlyList<T>>(listenersCapacity);
+		_collectionChangedListeners = new CallbackBuffer<IEnumerable<T>>(listenersCapacity);
 	}
 
 	/// <summary>
@@ -62,7 +62,7 @@ public class ReactiveArray<T> : IReactiveArray<T>
 		}
 		
 		_itemChangedByIndexListeners = new CallbackBuffer<(T, int)>(listenersCapacity);
-		_collectionChangedListeners = new CallbackBuffer<IReadOnlyList<T>>(listenersCapacity);
+		_collectionChangedListeners = new CallbackBuffer<IEnumerable<T>>(listenersCapacity);
 	}
 
 	/// <inheritdoc/>
@@ -94,42 +94,37 @@ public class ReactiveArray<T> : IReactiveArray<T>
 
 	/// <inheritdoc/>
 	[Obsolete("An array does not support adding an element", true)]
-	public void SubscribeOnItemAdded(Action<T> onItemAdded)
+	public Subscription<T> SubscribeOnItemAdded(Action<T> onItemAdded)
 	{
 		throw new Exception("An array does not support adding an element");
 	}
 
 	/// <inheritdoc/>
 	[Obsolete("An array does not support removing an element", true)]
-	public void SubscribeOnItemRemoved(Action<T> onItemRemoved)
+	public Subscription<T> SubscribeOnItemRemoved(Action<T> onItemRemoved)
 	{
 		throw new Exception("An array does not support removing an element");
 	}
 
 	/// <inheritdoc/>
 	[Obsolete("An array does not support adding and removing an element", true)]
-	public void SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
+	public CombinedDisposable<Subscription<T>, Subscription<T>> SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
 	{
 		throw new Exception("An array does not support adding and removing an element");
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
+	public Subscription<IEnumerable<T>> SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
 	{
-		if (notifyOnSubscribe)
-		{
-			_collectionChangedListeners.SubscribeWithNotify(collectionChanged, _array);
-		}
-		else
-		{
-			_collectionChangedListeners.Subscribe(collectionChanged);
-		}
+		return notifyOnSubscribe
+			? _collectionChangedListeners.SubscribeWithNotify(collectionChanged, _array)
+			: _collectionChangedListeners.Subscribe(collectionChanged);
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChangedByIndex)
+	public Subscription<(T, int)> SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChangedByIndex)
 	{
-		_itemChangedByIndexListeners.Subscribe(onItemChangedByIndex);
+		return _itemChangedByIndexListeners.Subscribe(onItemChangedByIndex);
 	}
 
 	/// <inheritdoc/>

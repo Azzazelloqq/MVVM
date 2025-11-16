@@ -96,41 +96,40 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
+	public Subscription<KeyValuePair<TKey, TValue>> SubscribeOnItemAdded(Action<KeyValuePair<TKey, TValue>> onItemAdded)
 	{
-		_itemAddedListeners.Subscribe(onItemAdded);
+		return _itemAddedListeners.Subscribe(onItemAdded);
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
+	public Subscription<KeyValuePair<TKey, TValue>> SubscribeOnItemRemoved(Action<KeyValuePair<TKey, TValue>> onItemRemoved)
 	{
-		_itemRemovedListeners.Subscribe(onItemRemoved);
+		return _itemRemovedListeners.Subscribe(onItemRemoved);
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
+	public CombinedDisposable<Subscription<KeyValuePair<TKey, TValue>>, Subscription<KeyValuePair<TKey, TValue>>> SubscribeOnCollectionChanged(Action<KeyValuePair<TKey, TValue>> onItemAdded,
 		Action<KeyValuePair<TKey, TValue>> onItemRemoved)
 	{
-		_itemAddedListeners.Subscribe(onItemAdded);
-		_itemRemovedListeners.Subscribe(onItemRemoved);
+		var addedSubscription = SubscribeOnItemAdded(onItemAdded);
+		var removedSubscription = SubscribeOnItemRemoved(onItemRemoved);
+
+		return CombinedDisposable.Create(addedSubscription, removedSubscription);
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged,
+	public Subscription<IEnumerable<KeyValuePair<TKey, TValue>>> SubscribeOnCollectionChanged(Action<IEnumerable<KeyValuePair<TKey, TValue>>> collectionChanged,
 		bool notifyOnSubscribe = true)
 	{
-		_collectionChangedListeners.Subscribe(collectionChanged);
-
-		if (notifyOnSubscribe)
-		{
-			collectionChanged.Invoke(_dictionary);
-		}
+		return notifyOnSubscribe
+			? _collectionChangedListeners.SubscribeWithNotify(collectionChanged, _dictionary)
+			: _collectionChangedListeners.Subscribe(collectionChanged);
 	}
 
 	/// <inheritdoc/>
-	public void SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
+	public Subscription<KeyValuePair<TKey, TValue>> SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action)
 	{
-		_valueChangedByKeyListeners.Subscribe(action);
+		return _valueChangedByKeyListeners.Subscribe(action);
 	}
 
 	/// <inheritdoc/>

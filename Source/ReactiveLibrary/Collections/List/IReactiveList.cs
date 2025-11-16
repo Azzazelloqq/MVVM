@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
@@ -176,19 +177,22 @@ public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
 	/// Subscribes to notifications when an item is added to the list at a specific index.
 	/// </summary>
 	/// <param name="onItemAdded">The action to invoke when an item is added at the specified index.</param>
-	public void SubscribeOnItemAddedByIndex(Action<(T, int)> onItemAdded);
+	/// <returns>A value-type subscription token.</returns>
+	public Subscription<(T, int)> SubscribeOnItemAddedByIndex(Action<(T, int)> onItemAdded);
 
 	/// <summary>
 	/// Subscribes to notifications when an item is removed from the list at a specific index.
 	/// </summary>
 	/// <param name="onItemRemoved">The action to invoke when an item is removed at the specified index.</param>
-	public void SubscribeOnItemRemovedByIndex(Action<(T, int)> onItemRemoved);
+	/// <returns>A value-type subscription token.</returns>
+	public Subscription<(T, int)> SubscribeOnItemRemovedByIndex(Action<(T, int)> onItemRemoved);
 
 	/// <summary>
 	/// Subscribes to notifications when an item is changed in the list at a specific index.
 	/// </summary>
 	/// <param name="onItemChanged">The action to invoke when an item is changed at the specified index.</param>
-	public void SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChanged);
+	/// <returns>A value-type subscription token.</returns>
+	public Subscription<(T, int)> SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChanged);
 
 	/// <summary>
 	/// Unsubscribes from notifications when an item is changed in the list at a specific index.

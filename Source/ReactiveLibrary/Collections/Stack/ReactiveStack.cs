@@ -96,33 +96,32 @@ public class ReactiveStack<T> : IReactiveStack<T>
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnItemAdded(Action<T> onItemAdded)
+    public Subscription<T> SubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _itemAddedBuffer.Subscribe(onItemAdded);
+        return _itemAddedBuffer.Subscribe(onItemAdded);
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnItemRemoved(Action<T> onItemRemoved)
+    public Subscription<T> SubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _itemRemovedBuffer.Subscribe(onItemRemoved);
+        return _itemRemovedBuffer.Subscribe(onItemRemoved);
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
+    public CombinedDisposable<Subscription<T>, Subscription<T>> SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
     {
-        _itemAddedBuffer.Subscribe(onItemAdded);
-        _itemRemovedBuffer.Subscribe(onItemRemoved);
+        var addedSubscription = SubscribeOnItemAdded(onItemAdded);
+        var removedSubscription = SubscribeOnItemRemoved(onItemRemoved);
+
+        return CombinedDisposable.Create(addedSubscription, removedSubscription);
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
+    public Subscription<IEnumerable<T>> SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
     {
-        if (notifyOnSubscribe)
-        {
-            collectionChanged.Invoke(_stack);
-        }
-        
-        _collectionChangedBuffer.Subscribe(collectionChanged);
+        return notifyOnSubscribe
+            ? _collectionChangedBuffer.SubscribeWithNotify(collectionChanged, _stack)
+            : _collectionChangedBuffer.Subscribe(collectionChanged);
     }
 
     /// <inheritdoc/>

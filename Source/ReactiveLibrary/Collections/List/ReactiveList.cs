@@ -25,7 +25,7 @@ public class ReactiveList<T> : IReactiveList<T>
     private readonly ICallbacks<(T,int)> _listenersItemAddedAtIndex;
     private readonly ICallbacks<(T,int)> _listenersItemRemovedAtIndex;
     private readonly ICallbacks<(T,int)> _listenersItemChangedAtIndex;
-    private readonly ICallbacks<IReadOnlyList<T>> _collectionChangedListeners;
+    private readonly ICallbacks<IEnumerable<T>> _collectionChangedListeners;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveList{T}"/> class with a specified capacity.
@@ -41,7 +41,7 @@ public class ReactiveList<T> : IReactiveList<T>
         _listenersItemAddedAtIndex = new CallbackBuffer<(T, int)>(listenersCapacity);
         _listenersItemRemovedAtIndex = new CallbackBuffer<(T, int)>(listenersCapacity);
         _listenersItemChangedAtIndex = new CallbackBuffer<(T, int)>(listenersCapacity);
-        _collectionChangedListeners = new CallbackBuffer<IReadOnlyList<T>>(listenersCapacity);
+        _collectionChangedListeners = new CallbackBuffer<IEnumerable<T>>(listenersCapacity);
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class ReactiveList<T> : IReactiveList<T>
         _listenersItemAddedAtIndex = new CallbackBuffer<(T, int)>(listenersCapacity);
         _listenersItemRemovedAtIndex = new CallbackBuffer<(T, int)>(listenersCapacity);
         _listenersItemChangedAtIndex = new CallbackBuffer<(T, int)>(listenersCapacity);
-        _collectionChangedListeners = new CallbackBuffer<IReadOnlyList<T>>(listenersCapacity);
+        _collectionChangedListeners = new CallbackBuffer<IEnumerable<T>>(listenersCapacity);
     }
 
     /// <inheritdoc/>
@@ -89,51 +89,50 @@ public class ReactiveList<T> : IReactiveList<T>
     }
     
     /// <inheritdoc/>
-    public void SubscribeOnItemAdded(Action<T> onItemAdded)
+    public Subscription<T> SubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _listenersItemAdded.Subscribe(onItemAdded);
+        return _listenersItemAdded.Subscribe(onItemAdded);
     }
     
     /// <inheritdoc/>
-    public void SubscribeOnItemRemoved(Action<T> onItemRemoved)
+    public Subscription<T> SubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _listenersItemRemoved.Subscribe(onItemRemoved);
+        return _listenersItemRemoved.Subscribe(onItemRemoved);
     }
     
     /// <inheritdoc/>
-    public void SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
+    public CombinedDisposable<Subscription<T>, Subscription<T>> SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
     {
-        SubscribeOnItemAdded(onItemAdded);
-        SubscribeOnItemRemoved(onItemRemoved);
-    }
-    
-    /// <inheritdoc/>
-    public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
-    {
-        if (notifyOnSubscribe)
-        {
-            collectionChanged(_list);
-        }
+        var addedSubscription = SubscribeOnItemAdded(onItemAdded);
+        var removedSubscription = SubscribeOnItemRemoved(onItemRemoved);
 
-        _collectionChangedListeners.Subscribe(collectionChanged);
+        return CombinedDisposable.Create(addedSubscription, removedSubscription);
+    }
+    
+    /// <inheritdoc/>
+    public Subscription<IEnumerable<T>> SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
+    {
+        return notifyOnSubscribe
+            ? _collectionChangedListeners.SubscribeWithNotify(collectionChanged, _list)
+            : _collectionChangedListeners.Subscribe(collectionChanged);
     }
         
     /// <inheritdoc/>
-    public void SubscribeOnItemAddedByIndex(Action<(T, int)> onItemAdded)
+    public Subscription<(T, int)> SubscribeOnItemAddedByIndex(Action<(T, int)> onItemAdded)
     {
-        _listenersItemAddedAtIndex.Subscribe(onItemAdded);
+        return _listenersItemAddedAtIndex.Subscribe(onItemAdded);
     }
     
     /// <inheritdoc/>
-    public void SubscribeOnItemRemovedByIndex(Action<(T, int)> onItemRemoved)
+    public Subscription<(T, int)> SubscribeOnItemRemovedByIndex(Action<(T, int)> onItemRemoved)
     {
-        _listenersItemRemovedAtIndex.Subscribe(onItemRemoved);
+        return _listenersItemRemovedAtIndex.Subscribe(onItemRemoved);
     }
     
     /// <inheritdoc/>
-    public void SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChanged)
+    public Subscription<(T, int)> SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChanged)
     {
-        _listenersItemChangedAtIndex.Subscribe(onItemChanged);
+        return _listenersItemChangedAtIndex.Subscribe(onItemChanged);
     }
     
     /// <inheritdoc/>

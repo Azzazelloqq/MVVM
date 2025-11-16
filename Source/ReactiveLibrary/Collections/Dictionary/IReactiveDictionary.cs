@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
@@ -68,7 +69,8 @@ public interface IReactiveDictionary<TKey, TValue> :
 	/// Subscribes to notifications when the value for a specific key in the dictionary changes.
 	/// </summary>
 	/// <param name="action">The action to invoke when the value changes for a specific key.</param>
-	public void SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action);
+	/// <returns>A value-type subscription token.</returns>
+	public Subscription<KeyValuePair<TKey, TValue>> SubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action);
 
 	/// <summary>
 	/// Unsubscribes from notifications when the value for a specific key in the dictionary changes.

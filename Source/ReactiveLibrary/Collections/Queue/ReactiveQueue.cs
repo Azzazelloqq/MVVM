@@ -98,33 +98,32 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnItemAdded(Action<T> onItemAdded)
+    public Subscription<T> SubscribeOnItemAdded(Action<T> onItemAdded)
     {
-        _itemAddedActions.Subscribe(onItemAdded);
+        return _itemAddedActions.Subscribe(onItemAdded);
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnItemRemoved(Action<T> onItemRemoved)
+    public Subscription<T> SubscribeOnItemRemoved(Action<T> onItemRemoved)
     {
-        _itemRemovedActions.Subscribe(onItemRemoved);
+        return _itemRemovedActions.Subscribe(onItemRemoved);
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
+    public CombinedDisposable<Subscription<T>, Subscription<T>> SubscribeOnCollectionChanged(Action<T> onItemAdded, Action<T> onItemRemoved)
     {
-        _itemAddedActions.Subscribe(onItemAdded);
-        _itemRemovedActions.Subscribe(onItemRemoved);
+        var addedSubscription = SubscribeOnItemAdded(onItemAdded);
+        var removedSubscription = SubscribeOnItemRemoved(onItemRemoved);
+
+        return CombinedDisposable.Create(addedSubscription, removedSubscription);
     }
 
     /// <inheritdoc/>
-    public void SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
+    public Subscription<IEnumerable<T>> SubscribeOnCollectionChanged(Action<IEnumerable<T>> collectionChanged, bool notifyOnSubscribe = true)
     {
-        if (notifyOnSubscribe)
-        {
-            collectionChanged?.Invoke(_queue);
-        }
-        
-        _collectionChangedListeners.Subscribe(collectionChanged);
+        return notifyOnSubscribe
+            ? _collectionChangedListeners.SubscribeWithNotify(collectionChanged, _queue)
+            : _collectionChangedListeners.Subscribe(collectionChanged);
     }
 
     /// <inheritdoc/>

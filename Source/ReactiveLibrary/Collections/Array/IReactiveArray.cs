@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
@@ -167,7 +168,8 @@ public interface IReactiveArray<T> : IReactiveCollection<T>, IReadOnlyList<T>
 	/// <param name="onItemChangedByIndex">
 	/// The action to perform when an item changes, with the item and index.
 	/// </param>
-	public void SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChangedByIndex);
+	/// <returns>A value-type subscription token.</returns>
+	public Subscription<(T, int)> SubscribeOnItemChangedByIndex(Action<(T, int)> onItemChangedByIndex);
 
 	//todo: think abous the same interface with list for this method
 	/// <summary>
