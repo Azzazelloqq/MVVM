@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 using Disposable;
 
 namespace Azzazelloqq.MVVM.Core
@@ -13,6 +14,8 @@ namespace Azzazelloqq.MVVM.Core
 /// <typeparam name="TViewModel">The type of the view model associated with the view, which implements <see cref="IViewModel"/>.</typeparam>
 public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  IView where TViewModel : IViewModel
 {
+    public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+    
     /// <summary>
     /// The view model associated with the view.
     /// </summary>
@@ -29,7 +32,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private bool _disposeWithViewModel;
-    private bool _isInitialized;
+    private readonly ReactiveProperty<bool> _isInitialized = new();
 
     /// <summary>
     /// Asynchronously initializes the view. This method must be called after the model is created 
@@ -40,6 +43,11 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
     public async Task InitializeAsync(IViewModel viewModel, CancellationToken token, bool disposeWithViewModel = true)
     {
+        if (_isInitialized.Value)
+        {
+            throw new Exception("View is already initialized");
+        }
+        
         if(viewModel is not TViewModel concreteViewModel)
         {
             throw new Exception($"Cannot cast {viewModel.GetType()} to {typeof(TViewModel)}");
@@ -52,7 +60,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         
         await OnInitializeAsync(token);
         
-        _isInitialized = true;
+        _isInitialized.SetValue(true);
     }
     
     /// <summary>
@@ -61,7 +69,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// </summary>
     public void Initialize(IViewModel viewModel, bool disposeWithViewModel = true)
     {
-        if (_isInitialized)
+        if (_isInitialized.Value)
         {
             throw new Exception("View is already initialized");
         }
@@ -78,7 +86,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
 
         OnInitialize();
         
-        _isInitialized = true;
+        _isInitialized.SetValue(true);
     }
 
     /// <summary>

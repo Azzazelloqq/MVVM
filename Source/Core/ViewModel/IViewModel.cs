@@ -9,5 +9,6 @@ namespace Azzazelloqq.MVVM.Core
 public interface IViewModel
 {
     public IReadOnlyNotifier DisposeNotifier { get; }
+    public IReadOnlyReactiveProperty<bool> IsInitialized { get; }
 }
 }

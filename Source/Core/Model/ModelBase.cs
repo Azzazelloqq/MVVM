@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 using Disposable;
 
 namespace Azzazelloqq.MVVM.Core
@@ -11,6 +12,8 @@ namespace Azzazelloqq.MVVM.Core
 /// </summary>
 public abstract class ModelBase : DisposableBase, IModel
 {
+	public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+	
 	/// <summary>
 	/// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
 	/// </summary>
@@ -21,32 +24,32 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// </summary>
 	protected CancellationToken disposeToken => disposeCancellationToken;
 
-	private bool _isInitialized;
+	private ReactiveProperty<bool> _isInitialized = new();
 
 	/// <inheritdoc/>
 	void IModel.Initialize()
 	{
-		if (_isInitialized)
+		if (_isInitialized.Value)
 		{
 			throw new Exception("Model has already been initialized.");
 		}
 
 		OnInitialize();
 
-		_isInitialized = true;
+		_isInitialized.SetValue(true);
 	}
 
 	/// <inheritdoc/>
 	async Task IModel.InitializeAsync(CancellationToken token)
 	{
-		if (_isInitialized)
+		if (_isInitialized.Value)
 		{
 			throw new Exception("Model has already been initialized.");
 		}
 		
 		await OnInitializeAsync(token);
 		
-		_isInitialized = true;
+		_isInitialized.SetValue(true);
 	}
 	
 	/// <summary>

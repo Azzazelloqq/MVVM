@@ -15,6 +15,7 @@ namespace Azzazelloqq.MVVM.Core
 public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where TModel : IModel
 {
     public IReadOnlyNotifier DisposeNotifier => _disposeNotifier;
+    public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
     
     /// <summary>
     /// The model associated with the view model.
@@ -31,8 +32,8 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// </summary>
     protected CancellationToken disposeToken => disposeCancellationToken;
 
-    private readonly ReactiveNotifier _disposeNotifier = new ReactiveNotifier();
-    private bool _isInitialized;
+    private readonly ReactiveNotifier _disposeNotifier = new();
+    private readonly ReactiveProperty<bool> _isInitialized = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{TModel}"/> class with the specified model.
@@ -55,7 +56,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
     public async Task InitializeAsync(CancellationToken token)
     {
-        if (_isInitialized)
+        if (_isInitialized.Value)
         {
             throw new Exception("ViewModel has already been initialized.");
         }
@@ -64,7 +65,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         await OnInitializeAsync(token);
 
-        _isInitialized = true;
+        _isInitialized.SetValue(true);
     }
 
     /// <summary>
@@ -72,7 +73,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// </summary>
     public void Initialize()
     {
-        if (_isInitialized)
+        if (_isInitialized.Value)
         {
             throw new Exception("ViewModel has already been initialized.");
         }
@@ -81,7 +82,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         OnInitialize();
         
-        _isInitialized = true;
+        _isInitialized.SetValue(true);
     }
 
     /// <summary>

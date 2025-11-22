@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Azzazelloqq.MVVM.ReactiveLibrary;
 
 namespace Azzazelloqq.MVVM.Core
 {
@@ -9,6 +10,8 @@ namespace Azzazelloqq.MVVM.Core
 /// </summary>
 public interface IView : IDisposable
 {
+	public IReadOnlyReactiveProperty<bool> IsInitialized { get; }
+	
 	/// <summary>
 	/// Asynchronously initializes the view. This method must be called after the model is created 
 	/// to set up any necessary state or dependencies. Failure to call this method may result in incorrect behavior.
