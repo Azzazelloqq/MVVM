@@ -70,6 +70,27 @@ namespace Azzazelloqq.MVVM.Tests
         }
 
         [Test]
+        public void ActionCommand_CanExecute_ShouldReflectPredicateChanges()
+        {
+            // Arrange
+            bool allowExecute = false;
+            var command = new ActionCommand(() => { }, () => allowExecute);
+
+            try
+            {
+                // Act & Assert
+                Assert.IsFalse(command.CanExecute(), "CanExecute should reflect the current predicate value");
+
+                allowExecute = true;
+                Assert.IsTrue(command.CanExecute(), "CanExecute should update when predicate result changes");
+            }
+            finally
+            {
+                command.Dispose();
+            }
+        }
+
+        [Test]
         public void ActionCommand_Execute_WhenCannotExecute_ShouldNotCallAction()
         {
             // Arrange
@@ -169,6 +190,27 @@ namespace Azzazelloqq.MVVM.Tests
         }
 
         [Test]
+        public void RelayCommand_CanExecute_ShouldReflectPredicateChanges()
+        {
+            // Arrange
+            bool allowExecute = false;
+            var command = new RelayCommand<string>(_ => { }, () => allowExecute);
+
+            try
+            {
+                // Act & Assert
+                Assert.IsFalse(command.CanExecute(), "CanExecute should reflect the current predicate value");
+
+                allowExecute = true;
+                Assert.IsTrue(command.CanExecute(), "CanExecute should update when predicate result changes");
+            }
+            finally
+            {
+                command.Dispose();
+            }
+        }
+
+        [Test]
         public void RelayCommand_Execute_WhenCannotExecute_ShouldNotCallAction()
         {
             // Arrange
@@ -247,6 +289,27 @@ namespace Azzazelloqq.MVVM.Tests
         }
 
         [Test]
+        public void ActionAsyncCommand_CanExecute_ShouldReflectPredicateChanges()
+        {
+            // Arrange
+            bool allowExecute = false;
+            var command = new ActionAsyncCommand(async () => await Task.Delay(1), () => allowExecute);
+
+            try
+            {
+                // Act & Assert
+                Assert.IsFalse(command.CanExecute(), "CanExecute should reflect the current predicate value");
+
+                allowExecute = true;
+                Assert.IsTrue(command.CanExecute(), "CanExecute should update when predicate result changes");
+            }
+            finally
+            {
+                command.Dispose();
+            }
+        }
+
+        [Test]
         public async Task AsyncRelayCommand_ExecuteAsync_ShouldCallAsyncAction()
         {
             // Arrange
@@ -296,6 +359,28 @@ namespace Azzazelloqq.MVVM.Tests
             {
                 // Act & Assert
                 Assert.IsTrue(command.CanExecute(), "CanExecute should return true when predicate returns true");
+            }
+            finally
+            {
+                command.Dispose();
+            }
+        }
+
+        [Test]
+        public void AsyncRelayCommand_CanExecute_ShouldReflectPredicateChanges()
+        {
+            // Arrange
+            bool allowExecute = false;
+            var command = new AsyncRelayCommand<string>(
+                async _ => await Task.Delay(1), () => allowExecute);
+
+            try
+            {
+                // Act & Assert
+                Assert.IsFalse(command.CanExecute(), "CanExecute should reflect the current predicate value");
+
+                allowExecute = true;
+                Assert.IsTrue(command.CanExecute(), "CanExecute should update when predicate result changes");
             }
             finally
             {

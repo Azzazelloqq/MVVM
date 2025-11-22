@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azzazelloqq.MVVM.ReactiveLibrary;
-
 namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
@@ -14,8 +12,9 @@ namespace Azzazelloqq.MVVM.Core
 public class AsyncRelayCommand<T> : IAsyncCommand<T>
 {
     private Func<T, Task> _execute;
-    private readonly ReactiveProperty<bool> _canExecute;
+    private readonly Func<bool> _canExecuteEvaluator;
     private readonly CancellationTokenSource _disposeCancellationTokenSource;
+    private bool _isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AsyncRelayCommand{T}"/> class.
@@ -26,27 +25,37 @@ public class AsyncRelayCommand<T> : IAsyncCommand<T>
     public AsyncRelayCommand(Func<T, Task> execute, Func<bool> canExecute = null)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _canExecute = new ReactiveProperty<bool>(canExecute?.Invoke() ?? true);
+        _canExecuteEvaluator = canExecute ?? (() => true);
         _disposeCancellationTokenSource = new CancellationTokenSource();
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        _isDisposed = true;
         _execute = null;
-        _canExecute.Dispose();
         _disposeCancellationTokenSource.Dispose();
     }
 
     /// <inheritdoc/>
     public async Task ExecuteAsync(T parameter)
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+
         if (!CanExecute())
         {
             return;
         }
 
-        if (_disposeCancellationTokenSource.IsCancellationRequested)
+        if (_isDisposed || _disposeCancellationTokenSource.IsCancellationRequested)
         {
             return;
         }
@@ -57,9 +66,17 @@ public class AsyncRelayCommand<T> : IAsyncCommand<T>
     /// <inheritdoc/>
     public bool CanExecute()
     {
-        var isCancellationRequested = _disposeCancellationTokenSource.IsCancellationRequested;
+        if (_isDisposed)
+        {
+            return false;
+        }
+
+        if (_disposeCancellationTokenSource.IsCancellationRequested)
+        {
+            return false;
+        }
         
-        return _canExecute.Value && !isCancellationRequested;
+        return _canExecuteEvaluator();
     }
 }
 }

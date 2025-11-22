@@ -1,6 +1,4 @@
 ﻿using System;
-using Azzazelloqq.MVVM.ReactiveLibrary;
-
 namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
@@ -11,7 +9,8 @@ namespace Azzazelloqq.MVVM.Core
 public class RelayCommand<T> : IRelayCommand<T>
 {
     private Action<T> _execute;
-    private readonly ReactiveProperty<bool> _canExecute;
+    private readonly Func<bool> _canExecuteEvaluator;
+    private bool _isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RelayCommand{T}"/> class.
@@ -22,19 +21,24 @@ public class RelayCommand<T> : IRelayCommand<T>
     public RelayCommand(Action<T> execute, Func<bool> canExecute = null)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _canExecute = new ReactiveProperty<bool>(canExecute?.Invoke() ?? true);
+        _canExecuteEvaluator = canExecute ?? (() => true);
     }
 
     public void Dispose()
     {
-        _canExecute.Dispose();
+        _isDisposed = true;
         _execute = null;
     }
 
     /// <inheritdoc/>
     public bool CanExecute()
     {
-        return _canExecute.Value;
+        if (_isDisposed)
+        {
+            return false;
+        }
+
+        return _canExecuteEvaluator();
     }
 
     /// <inheritdoc/>
