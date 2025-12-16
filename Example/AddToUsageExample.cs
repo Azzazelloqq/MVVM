@@ -18,18 +18,15 @@ public class AddToUsageExample : ViewModelBase<IModel>
 {
 	private readonly ReactiveProperty<int> _counter;
 	private readonly ReactiveProperty<string> _status;
-	private readonly ReactiveNotifier _updateNotifier;
 
 	public AddToUsageExample(IModel model) : base(model)
 	{
 		_counter = new ReactiveProperty<int>(0);
 		_status = new ReactiveProperty<string>("Ready");
-		_updateNotifier = new ReactiveNotifier();
 		
 		// Add reactive properties to composite disposable for automatic cleanup
 		_counter.AddTo(compositeDisposable);
 		_status.AddTo(compositeDisposable);
-		_updateNotifier.AddTo(compositeDisposable);
 	}
 
 	protected override void OnInitialize()
@@ -44,12 +41,7 @@ public class AddToUsageExample : ViewModelBase<IModel>
 			.SubscribeOnce(OnFirstStatusChange)
 			.AddTo(compositeDisposable);
 		
-		// Example 3: Chain multiple subscriptions
-		_updateNotifier
-			.Subscribe(OnUpdate)
-			.AddTo(compositeDisposable);
-			
-		// Example 4: Multiple subscriptions to same source
+		// Example 3: Multiple subscriptions to same source
 		_counter
 			.Subscribe(value => Console.WriteLine($"Counter value: {value}"), withNotify: false)
 			.AddTo(compositeDisposable);

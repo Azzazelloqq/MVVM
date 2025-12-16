@@ -1,4 +1,4 @@
-#if !PROJECT_SUPPORT_R3
+п»ї#if !PROJECT_SUPPORT_R3
 using System;
 using System.Collections.Generic;
 
@@ -10,106 +10,124 @@ namespace Azzazelloqq.MVVM.ReactiveLibrary
 /// </summary>
 public class ReactiveNotifier : IReactiveNotifier
 {
- public bool IsDisposed { get; private set; }
+	public bool IsDisposed { get; private set; }
 
-        private readonly object _lock = new();
-        private readonly int _capacity;
-        private List<Action> _callbacks;             // основное хранилище
-        private Action[]     _cache = Array.Empty<Action>();  // буфер для быстрого Invoke
+	private readonly object _lock = new();
+	private readonly int _capacity;
+	private List<Action> _callbacks;
+	private Action[] _cache = Array.Empty<Action>(); 
 
-        private int _cacheVersion;   // увеличивается при каждой модификации списка
-        private int _cachedVersion = -1; // версия, для которой собран _cache
-        private int _cacheCount;     // сколько значимых элементов лежит в _cache
+	private int _cacheVersion;
+	private int _cachedVersion = -1; 
+	private int _cacheCount; 
 
-        public ReactiveNotifier(int listenersCapacity = 30)
-        {
-            _capacity = listenersCapacity;
-        }
+	public ReactiveNotifier(int listenersCapacity = 30)
+	{
+		_capacity = listenersCapacity;
+	}
 
-        /*------------------------------------------------------------------------*/
-        /* IReadOnlyNotifier                                                      */
-        /*------------------------------------------------------------------------*/
+	public void Subscribe(Action onNotify)
+	{
+		if (onNotify == null)
+		{
+			throw new ArgumentNullException(nameof(onNotify));
+		}
 
-        public void Subscribe(Action onNotify)
-        {
-            if (onNotify == null) throw new ArgumentNullException(nameof(onNotify));
-            ThrowIfDisposed();
+		ThrowIfDisposed();
 
-            lock (_lock)
-            {
-                _callbacks ??= new List<Action>(_capacity);
-                _callbacks.Add(onNotify);
-                _cacheVersion++;
-            }
-        }
+		lock (_lock)
+		{
+			_callbacks ??= new List<Action>(_capacity);
+			_callbacks.Add(onNotify);
+			_cacheVersion++;
+		}
+	}
 
-        public void Unsubscribe(Action onNotify)
-        {
-            if (onNotify == null) return;
+	public void Unsubscribe(Action onNotify)
+	{
+		if (onNotify == null)
+		{
+			return;
+		}
 
-            lock (_lock)
-            {
-                if (_callbacks != null && _callbacks.Remove(onNotify))
-                    _cacheVersion++;
-            }
-        }
+		lock (_lock)
+		{
+			if (_callbacks != null && _callbacks.Remove(onNotify))
+			{
+				_cacheVersion++;
+			}
+		}
+	}
 
-        public void Notify()
-        {
-            if (IsDisposed) return;
-            if (_callbacks == null) return;      // ещё никто не подписывался
+	public void Notify()
+	{
+		if (IsDisposed)
+		{
+			return;
+		}
 
-            Action[] local;
-            int      count;
+		if (_callbacks == null)
+		{
+			return; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		}
 
-            lock (_lock)
-            {
-                if (_cacheVersion != _cachedVersion)
-                {
-                    count = _callbacks.Count;
+		Action[] local;
+		int count;
 
-                    // подгоняем размер кэша, чтобы не держать лишнюю память
-                    if (_cache.Length > count * 2 || _cache.Length < count)
-                        _cache = new Action[count];
+		lock (_lock)
+		{
+			if (_cacheVersion != _cachedVersion)
+			{
+				count = _callbacks.Count;
 
-                    _callbacks.CopyTo(_cache, 0);
-                    _cacheCount    = count;
-                    _cachedVersion = _cacheVersion;
-                }
-                else
-                {
-                    count = _cacheCount;
-                }
+				if (_cache.Length > count * 2 || _cache.Length < count)
+				{
+					_cache = new Action[count];
+				}
 
-                local = _cache; // после выхода из lock читаем из кеша без блокировок
-            }
+				_callbacks.CopyTo(_cache, 0);
+				_cacheCount = count;
+				_cachedVersion = _cacheVersion;
+			}
+			else
+			{
+				count = _cacheCount;
+			}
 
-            for (var i = 0; i < count; i++)
-            {
-                local[i]?.Invoke();
-            }
-        }
+			local = _cache; 
+		}
 
-        public void Dispose()
-        {
-            if (IsDisposed) return;
+		for (var i = 0; i < count; i++)
+		{
+			local[i]?.Invoke();
+		}
+	}
 
-            lock (_lock)
-            {
-                _callbacks?.Clear();
-                _cacheCount    = 0;
-                _cacheVersion++;
-                _cachedVersion = -1;
-            }
+	public void Dispose()
+	{
+		if (IsDisposed)
+		{
+			return;
+		}
 
-            IsDisposed = true;
-        }
+		lock (_lock)
+		{
+			_callbacks?.Clear();
+			_cacheCount = 0;
+			_cacheVersion++;
+			_cachedVersion = -1;
+		}
 
-        private void ThrowIfDisposed()
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(nameof(ReactiveNotifier));
-        }
+		IsDisposed = true;
+	}
+
+	private void ThrowIfDisposed()
+	{
+		if (IsDisposed)
+		{
+			throw new ObjectDisposedException(nameof(ReactiveNotifier));
+		}
+	}
 }
 }
 #endif
