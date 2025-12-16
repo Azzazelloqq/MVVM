@@ -6,6 +6,9 @@ using Azzazelloqq.MVVM.Core;
 using Azzazelloqq.MVVM.Example.Item;
 using Azzazelloqq.MVVM.ReactiveLibrary;
 using Azzazelloqq.MVVM.ReactiveLibrary.Collections;
+#if PROJECT_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+#endif
 
 namespace Azzazelloqq.MVVM.Example
 {
@@ -130,13 +133,22 @@ internal class InventoryViewModel : ViewModelBase<InventoryModel>
 		// Example:
 		// (AddItemCommand as RelayCommand<string>)?.RaiseCanExecuteChanged();
 	}
-
+	
+	#if PROJECT_SUPPORT_UNITASK
+	private async UniTask OnLoadInventoryCommandExecuteAsync(string path)
+	{
+		await model.LoadInventoryAsync(path, disposeToken);
+		// Model will trigger OnItemAdded for each new item, 
+		// so the UI will be updated automatically.
+	}
+	#else
 	private async Task OnLoadInventoryCommandExecuteAsync(string path)
 	{
 		await model.LoadInventoryAsync(path, disposeToken);
 		// Model will trigger OnItemAdded for each new item, 
 		// so the UI will be updated automatically.
 	}
+	#endif
 }
 }
 #endif

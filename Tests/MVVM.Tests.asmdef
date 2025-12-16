@@ -7,7 +7,8 @@
         "MVVM.Core",
         "MVVM.Reactive",
         "Disposable",
-        "MVP.Tests"
+        "MVP.Tests",
+        "UniTask"
     ],
     "versionDefines": [
         {

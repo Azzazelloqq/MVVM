@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Threading;
+#if PROJECT_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
 using System.Threading.Tasks;
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
@@ -8,7 +14,7 @@ namespace Azzazelloqq.MVVM.Core
 /// </summary>
 public class ActionAsyncCommand : IActionAsyncCommand
 {
-	private Func<Task> _execute;
+	private Func<MVVMTask> _execute;
 	private readonly Func<bool> _canExecuteEvaluator;
 	private readonly CancellationTokenSource _disposeCancellationTokenSource;
 	private bool _isDisposed;
@@ -19,7 +25,7 @@ public class ActionAsyncCommand : IActionAsyncCommand
 	/// <param name="execute">The function to execute asynchronously.</param>
 	/// <param name="canExecute">The function that determines whether the command can execute. If null, the command can always execute.</param>
 	/// <exception cref="ArgumentNullException">Thrown if the execute function is null.</exception>
-	public ActionAsyncCommand(Func<Task> execute, Func<bool> canExecute = null)
+	public ActionAsyncCommand(Func<MVVMTask> execute, Func<bool> canExecute = null)
 	{
 		_execute = execute ?? throw new ArgumentNullException(nameof(execute));
 		_canExecuteEvaluator = canExecute ?? (() => true);
@@ -40,7 +46,7 @@ public class ActionAsyncCommand : IActionAsyncCommand
 	}
 
 	/// <inheritdoc/>
-	public async Task ExecuteAsync()
+	public async MVVMTask ExecuteAsync()
 	{
 		if (_isDisposed)
 		{

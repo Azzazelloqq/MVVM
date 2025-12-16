@@ -1,6 +1,12 @@
 using System;
 using System.Threading;
+#if PROJECT_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
 using System.Threading.Tasks;
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 #if PROJECT_SUPPORT_R3
 using R3;
 #else
@@ -32,7 +38,7 @@ public interface IModel : IDisposable
 	/// </summary>
 	/// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
 	/// It allows the operation to be canceled.</param>
-	/// <returns>A task that represents the asynchronous initialization operation.</returns>
-	public Task InitializeAsync(CancellationToken token);
+	/// <returns>An awaitable that represents the asynchronous initialization operation.</returns>
+	public MVVMTask InitializeAsync(CancellationToken token);
 }
 }

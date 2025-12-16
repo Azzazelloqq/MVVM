@@ -1,6 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+#if PROJECT_SUPPORT_UNITASK
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 #if PROJECT_SUPPORT_R3
 using R3;
 #else
@@ -53,7 +58,7 @@ public abstract class ModelBase : DisposableBase, IModel
 	}
 
 	/// <inheritdoc/>
-	async Task IModel.InitializeAsync(CancellationToken token)
+	async MVVMTask IModel.InitializeAsync(CancellationToken token)
 	{
 		if (_isInitialized.Value)
 		{

@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Threading;
+#if PROJECT_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
 using System.Threading.Tasks;
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 namespace Azzazelloqq.MVVM.Core
 {
 /// <summary>
@@ -11,7 +17,7 @@ namespace Azzazelloqq.MVVM.Core
 /// <typeparam name="T">The type of the parameter passed to the command when it is executed.</typeparam>
 public class AsyncRelayCommand<T> : IAsyncCommand<T>
 {
-    private Func<T, Task> _execute;
+    private Func<T, MVVMTask> _execute;
     private readonly Func<bool> _canExecuteEvaluator;
     private readonly CancellationTokenSource _disposeCancellationTokenSource;
     private bool _isDisposed;
@@ -22,7 +28,7 @@ public class AsyncRelayCommand<T> : IAsyncCommand<T>
     /// <param name="execute">The asynchronous function to execute when the command is triggered.</param>
     /// <param name="canExecute">A function that determines whether the command can be executed. Defaults to <c>true</c> if not provided.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> function is <c>null</c>.</exception>
-    public AsyncRelayCommand(Func<T, Task> execute, Func<bool> canExecute = null)
+    public AsyncRelayCommand(Func<T, MVVMTask> execute, Func<bool> canExecute = null)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecuteEvaluator = canExecute ?? (() => true);
@@ -43,7 +49,7 @@ public class AsyncRelayCommand<T> : IAsyncCommand<T>
     }
 
     /// <inheritdoc/>
-    public async Task ExecuteAsync(T parameter)
+    public async MVVMTask ExecuteAsync(T parameter)
     {
         if (_isDisposed)
         {

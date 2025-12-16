@@ -1,6 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+#if PROJECT_SUPPORT_UNITASK
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 #if PROJECT_SUPPORT_R3
 using R3;
 #else
@@ -55,7 +60,7 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
     /// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
     /// It allows the operation to be canceled.</param>
     /// <returns>A task that represents the asynchronous initialization operation.</returns>
-    public async Task InitializeAsync(IViewModel viewModel, CancellationToken token, bool disposeWithViewModel = true)
+    public async MVVMTask InitializeAsync(IViewModel viewModel, CancellationToken token, bool disposeWithViewModel = true)
     {
         if (_isInitialized.Value)
         {

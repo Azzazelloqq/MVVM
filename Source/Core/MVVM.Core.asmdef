@@ -1,11 +1,11 @@
 {
     "name": "MVVM.Core",
     "rootNamespace": "Azzazelloqq",
-    "references":
-    [
-	    "Disposable",
-        "MVVM.Reactive"
-	],
+    "references": [
+        "Disposable",
+        "MVVM.Reactive",
+        "UniTask"
+    ],
     "versionDefines": [
         {
             "name": "com.cysharp.r3",

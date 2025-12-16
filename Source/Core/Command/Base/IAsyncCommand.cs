@@ -1,4 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿#if PROJECT_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
+using System.Threading.Tasks;
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 
 namespace Azzazelloqq.MVVM.Core
 {
@@ -11,7 +17,7 @@ public interface IAsyncCommand<in T> : ICommand
     /// Executes the command asynchronously with the specified parameter.
     /// </summary>
     /// <param name="parameter">The parameter of type <typeparamref name="T"/> to pass to the command.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task ExecuteAsync(T parameter);
+    /// <returns>An awaitable representing the asynchronous operation.</returns>
+    public MVVMTask ExecuteAsync(T parameter);
 }
 }

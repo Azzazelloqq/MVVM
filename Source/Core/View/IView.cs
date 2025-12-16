@@ -1,6 +1,12 @@
 using System;
 using System.Threading;
+#if PROJECT_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+using MVVMTask = Cysharp.Threading.Tasks.UniTask;
+#else
 using System.Threading.Tasks;
+using MVVMTask = System.Threading.Tasks.Task;
+#endif
 #if PROJECT_SUPPORT_R3
 using R3;
 #else
@@ -26,8 +32,8 @@ public interface IView : IDisposable
 	/// </summary>
 	/// <param name="token">A <see cref="CancellationToken"/> to observe while waiting for the task to complete. 
 	/// It allows the operation to be canceled.</param>
-	/// <returns>A task that represents the asynchronous initialization operation.</returns>
-	public Task InitializeAsync(IViewModel viewModel, CancellationToken token, bool disposeWithViewModel = true);
+	/// <returns>An awaitable that represents the asynchronous initialization operation.</returns>
+	public MVVMTask InitializeAsync(IViewModel viewModel, CancellationToken token, bool disposeWithViewModel = true);
 
 	/// <summary>
 	/// Initializes the view. This method must be called after the model is created to set up any necessary state or dependencies.
