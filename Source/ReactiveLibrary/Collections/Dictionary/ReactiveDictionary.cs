@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -387,3 +388,4 @@ public class ReactiveDictionary<TKey, TValue> : IReactiveDictionary<TKey, TValue
 	}
 }
 }
+#endif

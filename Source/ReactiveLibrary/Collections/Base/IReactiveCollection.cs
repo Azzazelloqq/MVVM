@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if !PROJECT_SUPPORT_R3
+using System.Collections.Generic;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
@@ -12,3 +13,4 @@ public interface IReactiveCollection<T> : IReadOnlyReactiveCollection<T>, IColle
 {
 }
 }
+#endif

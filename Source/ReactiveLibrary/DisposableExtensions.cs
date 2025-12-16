@@ -1,3 +1,4 @@
+#if !PROJECT_SUPPORT_R3
 using System;
 using Disposable;
 
@@ -27,3 +28,4 @@ public static class DisposableExtensions
 	}
 }
 }
+#endif

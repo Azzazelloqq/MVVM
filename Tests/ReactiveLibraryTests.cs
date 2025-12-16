@@ -1,3 +1,4 @@
+#if !PROJECT_SUPPORT_R3
 using NUnit.Framework;
 using System;
 using Azzazelloqq.MVVM.ReactiveLibrary;
@@ -539,3 +540,4 @@ namespace Azzazelloqq.MVVM.Tests
         }
     }
 }
+#endif

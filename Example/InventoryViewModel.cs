@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Core;
@@ -138,3 +139,4 @@ internal class InventoryViewModel : ViewModelBase<InventoryModel>
 	}
 }
 }
+#endif

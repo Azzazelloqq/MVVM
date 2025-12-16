@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections.Generic;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Callbacks
@@ -219,3 +220,4 @@ internal class CallbackBuffer<T> : ICallbacks<T>
 	}
 }
 }
+#endif

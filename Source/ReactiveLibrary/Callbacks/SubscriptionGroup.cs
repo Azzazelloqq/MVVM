@@ -1,3 +1,4 @@
+#if !PROJECT_SUPPORT_R3
 using System;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Callbacks
@@ -59,3 +60,5 @@ public struct CombinedDisposable<TFirst, TSecond> : IDisposable
 	}
 }
 }
+#endif
+

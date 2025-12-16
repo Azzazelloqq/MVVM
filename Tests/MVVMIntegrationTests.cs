@@ -1,3 +1,4 @@
+#if !PROJECT_SUPPORT_R3
 using NUnit.Framework;
 using System;
 using System.Threading;
@@ -403,3 +404,4 @@ namespace Azzazelloqq.MVVM.Tests
         }
     }
 }
+#endif

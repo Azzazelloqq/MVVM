@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Core;
-using Azzazelloqq.MVVM.ReactiveLibrary;
 
 namespace Azzazelloqq.MVVM.Tests
 {

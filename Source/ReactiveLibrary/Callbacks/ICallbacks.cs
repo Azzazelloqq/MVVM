@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Callbacks
 {
@@ -58,3 +59,4 @@ internal interface ICallbacks<T> : IDisposable
 	public void Clear();
 }
 }
+#endif

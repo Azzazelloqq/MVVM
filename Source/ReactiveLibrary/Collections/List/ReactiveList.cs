@@ -1,4 +1,5 @@
-п»їusing System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
@@ -197,7 +198,7 @@ public class ReactiveList<T> : IReactiveList<T>
     {
         int removedCount = 0;
 
-        for (int i = _list.Count - 1; i >= 0; i--) // РРґРµРј СЃ РєРѕРЅС†Р° СЃРїРёСЃРєР°, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РїСЂРѕР±Р»РµРј СЃ РёРЅРґРµРєСЃР°РјРё РїСЂРё СѓРґР°Р»РµРЅРёРё
+        for (int i = _list.Count - 1; i >= 0; i--) // Идем с конца списка, чтобы избежать проблем с индексами при удалении
         {
             var toRemove = _list[i];
             if (!predicate(toRemove))
@@ -498,3 +499,4 @@ public class ReactiveList<T> : IReactiveList<T>
     }
 }
 }
+#endif

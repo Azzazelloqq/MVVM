@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
@@ -271,3 +272,4 @@ public class ReactiveQueue<T> : IReactiveQueue<T>
     }
 }
 }
+#endif

@@ -6,6 +6,18 @@
 	    "Disposable",
         "MVVM.Reactive"
 	],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.r3",
+            "expression": "0.0.0",
+            "define": "PROJECT_SUPPORT_R3"
+        },
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "0.0.0",
+            "define": "PROJECT_SUPPORT_UNITASK"
+        }
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -13,6 +25,5 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
     "noEngineReferences": false
 }

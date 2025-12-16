@@ -6,12 +6,25 @@
         "UnityEditor.TestRunner",
         "MVVM.Core",
         "MVVM.Reactive",
-        "Disposable"
+        "Disposable",
+        "MVP.Tests"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.r3",
+            "expression": "0.0.0",
+            "define": "PROJECT_SUPPORT_R3"
+        },
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "0.0.0",
+            "define": "PROJECT_SUPPORT_UNITASK"
+        }
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "overrideReferences": false,
     "precompiledReferences": [
         "nunit.framework.dll"
     ],
@@ -19,6 +32,5 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [],
     "noEngineReferences": false
 }

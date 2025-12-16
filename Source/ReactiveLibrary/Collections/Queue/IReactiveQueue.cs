@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
@@ -59,3 +60,4 @@ public interface IReactiveQueue<T> : IReactiveCollection<T>, ICloneable
     public bool TryPeek(out T result);
 }
 }
+#endif

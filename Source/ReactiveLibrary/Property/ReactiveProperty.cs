@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections.Generic;
 using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
@@ -114,3 +115,4 @@ namespace Azzazelloqq.MVVM.ReactiveLibrary
 		}
 	}
 }
+#endif

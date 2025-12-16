@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
@@ -21,3 +22,4 @@ public interface IReadOnlyNotifier : IReactive
 	public void Unsubscribe(Action onNotify);
 }
 }
+#endif

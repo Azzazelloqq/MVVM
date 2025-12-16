@@ -1,4 +1,5 @@
-﻿using System.Threading;
+#if !PROJECT_SUPPORT_R3
+using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Core;
 using UnityEngine;
@@ -57,3 +58,4 @@ internal class ItemView : ViewMonoBehavior<ItemViewModel>
 	}
 }
 }
+#endif

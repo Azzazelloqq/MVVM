@@ -1,3 +1,4 @@
+#if !PROJECT_SUPPORT_R3
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -745,3 +746,4 @@ namespace Azzazelloqq.MVVM.Tests
         }
     }
 }
+#endif

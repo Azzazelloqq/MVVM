@@ -3,7 +3,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Core;
+#if PROJECT_SUPPORT_R3
+using R3;
+#else
 using Azzazelloqq.MVVM.ReactiveLibrary;
+#endif
 
 namespace Azzazelloqq.MVVM.Tests
 {
@@ -100,7 +104,7 @@ namespace Azzazelloqq.MVVM.Tests
         {
             // Arrange
             bool notifierCalled = false;
-            _testViewModel.DisposeNotifier.Subscribe(() => notifierCalled = true);
+            using var subscription = SubscribeToDisposeNotifier(_testViewModel, () => notifierCalled = true);
 
             // Act
             _testViewModel.Dispose();
@@ -117,7 +121,7 @@ namespace Azzazelloqq.MVVM.Tests
             // Arrange
             using var cts = new CancellationTokenSource();
             bool notifierCalled = false;
-            _testViewModel.DisposeNotifier.Subscribe(() => notifierCalled = true);
+            using var subscription = SubscribeToDisposeNotifier(_testViewModel, () => notifierCalled = true);
 
             // Act
             await _testViewModel.DisposeAsync(cts.Token);
@@ -127,6 +131,19 @@ namespace Azzazelloqq.MVVM.Tests
             Assert.IsTrue(_testViewModel.IsOnDisposeAsyncCalled, "OnDisposeAsync should be called");
             Assert.IsTrue(_testViewModel.IsDisposed, "ViewModel should be marked as disposed");
         }
+
+#if PROJECT_SUPPORT_R3
+        [Test]
+        public void R3_IsInitializedReactiveProperty_ShouldReflectInitializationState()
+        {
+            var isInitialized = ((IViewModel)_testViewModel).IsInitialized;
+            Assert.IsFalse(isInitialized.CurrentValue, "Initial state should be false");
+
+            _testViewModel.Initialize();
+
+            Assert.IsTrue(isInitialized.CurrentValue, "Reactive property should be true after initialization");
+        }
+#endif
 
         [Test]
         public void DisposeToken_WhenDisposed_ShouldBeCanceled()
@@ -232,6 +249,16 @@ namespace Azzazelloqq.MVVM.Tests
                 await Task.Delay(10, token); // Simulate async work
                 IsOnDisposeAsyncCalled = true;
             }
+        }
+
+        private IDisposable? SubscribeToDisposeNotifier(IViewModel viewModel, Action onNotify)
+        {
+#if PROJECT_SUPPORT_R3
+            return viewModel.DisposeNotifier.Subscribe(_ => onNotify());
+#else
+            viewModel.DisposeNotifier.Subscribe(onNotify);
+            return null;
+#endif
         }
     }
 }

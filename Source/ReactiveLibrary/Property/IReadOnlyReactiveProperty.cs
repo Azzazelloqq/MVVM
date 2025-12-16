@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary
@@ -38,3 +39,4 @@ public interface IReadOnlyReactiveProperty<TValue> : IReactive
     public void Unsubscribe(Action<TValue> onValueChanged);
 }
 }
+#endif

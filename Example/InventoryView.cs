@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -115,3 +116,4 @@ internal class InventoryView : ViewMonoBehavior<InventoryViewModel>
 	}
 }
 }
+#endif

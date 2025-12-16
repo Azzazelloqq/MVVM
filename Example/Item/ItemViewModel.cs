@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Core;
@@ -50,3 +51,4 @@ internal class ItemViewModel : ViewModelBase<ItemModel>
 	}
 }
 }
+#endif

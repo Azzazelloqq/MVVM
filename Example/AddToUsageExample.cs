@@ -1,3 +1,4 @@
+#if !PROJECT_SUPPORT_R3
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,3 +147,5 @@ public class AddToUsageExample : ViewModelBase<IModel>
 	}
 }
 }
+#endif
+

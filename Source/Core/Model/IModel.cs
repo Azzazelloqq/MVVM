@@ -1,7 +1,11 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+#if PROJECT_SUPPORT_R3
+using R3;
+#else
 using Azzazelloqq.MVVM.ReactiveLibrary;
+#endif
 
 namespace Azzazelloqq.MVVM.Core
 {
@@ -10,7 +14,11 @@ namespace Azzazelloqq.MVVM.Core
 /// </summary>
 public interface IModel : IDisposable
 {
+#if PROJECT_SUPPORT_R3
+	public ReadOnlyReactiveProperty<bool> IsInitialized { get; }
+#else
 	public IReadOnlyReactiveProperty<bool> IsInitialized { get; }
+#endif
 	
 	/// <summary>
 	/// Initializes the model. This method must be called after the model is created to set up any necessary state or dependencies.

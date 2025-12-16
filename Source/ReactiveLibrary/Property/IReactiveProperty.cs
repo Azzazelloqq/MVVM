@@ -1,4 +1,5 @@
-﻿namespace Azzazelloqq.MVVM.ReactiveLibrary
+#if !PROJECT_SUPPORT_R3
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a reactive property that allows both reading and setting its value.
@@ -14,3 +15,4 @@ public interface IReactiveProperty<TValue> : IReadOnlyReactiveProperty<TValue>
     public void SetValue(TValue value);
 }
 }
+#endif

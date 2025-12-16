@@ -1,4 +1,5 @@
-﻿namespace Azzazelloqq.MVVM.ReactiveLibrary
+#if !PROJECT_SUPPORT_R3
+namespace Azzazelloqq.MVVM.ReactiveLibrary
 {
 /// <summary>
 /// Represents a reactive notifier that allows triggering notifications.
@@ -12,3 +13,4 @@ public interface IReactiveNotifier : IReadOnlyNotifier
 	public void Notify();
 }
 }
+#endif

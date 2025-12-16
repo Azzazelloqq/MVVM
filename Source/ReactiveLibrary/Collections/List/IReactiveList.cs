@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections.Generic;
 using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
 
@@ -213,3 +214,4 @@ public interface IReactiveList<T> : IReactiveCollection<T>, IList<T>
 	public void UnsubscribeOnItemRemovedByIndex(Action<(T, int)> onItemRemoved);
 }
 }
+#endif

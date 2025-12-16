@@ -1,4 +1,5 @@
-п»їusing System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections.Generic;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary
@@ -13,12 +14,12 @@ public class ReactiveNotifier : IReactiveNotifier
 
         private readonly object _lock = new();
         private readonly int _capacity;
-        private List<Action> _callbacks;             // РѕСЃРЅРѕРІРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ
-        private Action[]     _cache = Array.Empty<Action>();  // Р±СѓС„РµСЂ РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ Invoke
+        private List<Action> _callbacks;             // основное хранилище
+        private Action[]     _cache = Array.Empty<Action>();  // буфер для быстрого Invoke
 
-        private int _cacheVersion;   // СѓРІРµР»РёС‡РёРІР°РµС‚СЃСЏ РїСЂРё РєР°Р¶РґРѕР№ РјРѕРґРёС„РёРєР°С†РёРё СЃРїРёСЃРєР°
-        private int _cachedVersion = -1; // РІРµСЂСЃРёСЏ, РґР»СЏ РєРѕС‚РѕСЂРѕР№ СЃРѕР±СЂР°РЅ _cache
-        private int _cacheCount;     // СЃРєРѕР»СЊРєРѕ Р·РЅР°С‡РёРјС‹С… СЌР»РµРјРµРЅС‚РѕРІ Р»РµР¶РёС‚ РІ _cache
+        private int _cacheVersion;   // увеличивается при каждой модификации списка
+        private int _cachedVersion = -1; // версия, для которой собран _cache
+        private int _cacheCount;     // сколько значимых элементов лежит в _cache
 
         public ReactiveNotifier(int listenersCapacity = 30)
         {
@@ -56,7 +57,7 @@ public class ReactiveNotifier : IReactiveNotifier
         public void Notify()
         {
             if (IsDisposed) return;
-            if (_callbacks == null) return;      // РµС‰С‘ РЅРёРєС‚Рѕ РЅРµ РїРѕРґРїРёСЃС‹РІР°Р»СЃСЏ
+            if (_callbacks == null) return;      // ещё никто не подписывался
 
             Action[] local;
             int      count;
@@ -67,7 +68,7 @@ public class ReactiveNotifier : IReactiveNotifier
                 {
                     count = _callbacks.Count;
 
-                    // РїРѕРґРіРѕРЅСЏРµРј СЂР°Р·РјРµСЂ РєСЌС€Р°, С‡С‚РѕР±С‹ РЅРµ РґРµСЂР¶Р°С‚СЊ Р»РёС€РЅСЋСЋ РїР°РјСЏС‚СЊ
+                    // подгоняем размер кэша, чтобы не держать лишнюю память
                     if (_cache.Length > count * 2 || _cache.Length < count)
                         _cache = new Action[count];
 
@@ -80,7 +81,7 @@ public class ReactiveNotifier : IReactiveNotifier
                     count = _cacheCount;
                 }
 
-                local = _cache; // РїРѕСЃР»Рµ РІС‹С…РѕРґР° РёР· lock С‡РёС‚Р°РµРј РёР· РєРµС€Р° Р±РµР· Р±Р»РѕРєРёСЂРѕРІРѕРє
+                local = _cache; // после выхода из lock читаем из кеша без блокировок
             }
 
             for (var i = 0; i < count; i++)
@@ -111,3 +112,4 @@ public class ReactiveNotifier : IReactiveNotifier
         }
 }
 }
+#endif

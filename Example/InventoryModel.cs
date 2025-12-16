@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if !PROJECT_SUPPORT_R3
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Azzazelloqq.MVVM.Core;
@@ -88,3 +89,4 @@ internal class InventoryModel : ModelBase
 	}
 }
 }
+#endif

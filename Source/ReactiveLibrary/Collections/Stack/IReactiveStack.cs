@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 
 namespace Azzazelloqq.MVVM.ReactiveLibrary.Collections
 {
@@ -60,3 +61,4 @@ public interface IReactiveStack<T> : IReactiveCollection<T>
     public bool TryPop(out T result);
 }
 }
+#endif

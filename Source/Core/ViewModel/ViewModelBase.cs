@@ -1,8 +1,13 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+#if PROJECT_SUPPORT_R3
+using R3;
+#else
 using Azzazelloqq.MVVM.ReactiveLibrary;
+#endif
 using Disposable;
+using CompositeDisposable = Disposable.CompositeDisposable;
 
 namespace Azzazelloqq.MVVM.Core
 {
@@ -14,8 +19,13 @@ namespace Azzazelloqq.MVVM.Core
 /// <typeparam name="TModel">The type of the model associated with the view model, which implements <see cref="IModel"/>.</typeparam>
 public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where TModel : IModel
 {
+#if PROJECT_SUPPORT_R3
+    public Observable<Unit> DisposeNotifier => _disposeNotifier;
+    public ReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+#else
     public IReadOnlyNotifier DisposeNotifier => _disposeNotifier;
     public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+#endif
     
     /// <summary>
     /// The model associated with the view model.
@@ -32,8 +42,13 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// </summary>
     protected CancellationToken disposeToken => disposeCancellationToken;
 
+#if PROJECT_SUPPORT_R3
+    private readonly Subject<Unit> _disposeNotifier = new();
+    private readonly ReactiveProperty<bool> _isInitialized = new(false);
+#else
     private readonly ReactiveNotifier _disposeNotifier = new();
     private readonly ReactiveProperty<bool> _isInitialized = new();
+#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{TModel}"/> class with the specified model.
@@ -65,7 +80,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         await OnInitializeAsync(token);
 
-        _isInitialized.SetValue(true);
+        MarkInitialized();
     }
 
     /// <summary>
@@ -82,7 +97,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         OnInitialize();
         
-        _isInitialized.SetValue(true);
+        MarkInitialized();
     }
 
     /// <summary>
@@ -98,8 +113,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         compositeDisposable.Dispose();
         
-        _disposeNotifier.Notify();
-        _disposeNotifier.Dispose();
+        NotifyDisposed();
         
     }
 
@@ -111,8 +125,7 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
         
         await compositeDisposable.DisposeAsync(token);
         
-        _disposeNotifier.Notify();
-        _disposeNotifier.Dispose();
+        NotifyDisposed();
     }
 
     /// <summary>
@@ -158,5 +171,26 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     protected abstract void OnDispose();
     
     protected abstract ValueTask OnDisposeAsync(CancellationToken token);
+
+    private void MarkInitialized()
+    {
+#if PROJECT_SUPPORT_R3
+        _isInitialized.Value = true;
+#else
+        _isInitialized.SetValue(true);
+#endif
+    }
+
+    private void NotifyDisposed()
+    {
+#if PROJECT_SUPPORT_R3
+        _disposeNotifier.OnNext(Unit.Default);
+        _disposeNotifier.OnCompleted(Result.Success);
+        _disposeNotifier.Dispose();
+#else
+        _disposeNotifier.Notify();
+        _disposeNotifier.Dispose();
+#endif
+    }
 }
 }

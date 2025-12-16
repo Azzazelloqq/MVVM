@@ -1,8 +1,13 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+#if PROJECT_SUPPORT_R3
+using R3;
+#else
 using Azzazelloqq.MVVM.ReactiveLibrary;
+#endif
 using Disposable;
+using CompositeDisposable = Disposable.CompositeDisposable;
 
 namespace Azzazelloqq.MVVM.Core
 {
@@ -14,7 +19,11 @@ namespace Azzazelloqq.MVVM.Core
 /// <typeparam name="TViewModel">The type of the view model associated with the view, which implements <see cref="IViewModel"/>.</typeparam>
 public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  IView where TViewModel : IViewModel
 {
+#if PROJECT_SUPPORT_R3
+    public ReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+#else
     public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+#endif
     
     /// <summary>
     /// The view model associated with the view.
@@ -32,7 +41,12 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     protected readonly ICompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private bool _disposeWithViewModel;
+#if PROJECT_SUPPORT_R3
+    private readonly ReactiveProperty<bool> _isInitialized = new(false);
+    private IDisposable _viewModelDisposeSubscription;
+#else
     private readonly ReactiveProperty<bool> _isInitialized = new();
+#endif
 
     /// <summary>
     /// Asynchronously initializes the view. This method must be called after the model is created 
@@ -56,11 +70,11 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         this.viewModel = concreteViewModel;
         
         _disposeWithViewModel = disposeWithViewModel;
-        viewModel.DisposeNotifier.Subscribe(OnViewModelDisposed);
+        SubscribeToDisposeNotifier(concreteViewModel);
         
         await OnInitializeAsync(token);
         
-        _isInitialized.SetValue(true);
+        MarkInitialized();
     }
     
     /// <summary>
@@ -82,11 +96,11 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         this.viewModel = concreteViewModel;
         
         _disposeWithViewModel = disposeWithViewModel;
-        viewModel.DisposeNotifier.Subscribe(OnViewModelDisposed);
+        SubscribeToDisposeNotifier(concreteViewModel);
 
         OnInitialize();
         
-        _isInitialized.SetValue(true);
+        MarkInitialized();
     }
 
     /// <summary>
@@ -105,7 +119,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         // Unsubscribe from ViewModel's dispose notifier if it was initialized
         if (viewModel != null)
         {
-            viewModel.DisposeNotifier.Unsubscribe(OnViewModelDisposed);
+            UnsubscribeFromDisposeNotifier();
         }
     }
     
@@ -120,7 +134,7 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         // Unsubscribe from ViewModel's dispose notifier if it was initialized
         if (viewModel != null)
         {
-            viewModel.DisposeNotifier.Unsubscribe(OnViewModelDisposed);
+            UnsubscribeFromDisposeNotifier();
         }
     }
 
@@ -179,6 +193,35 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
         }
         
         Dispose();
+    }
+
+    private void MarkInitialized()
+    {
+#if !PROJECT_SUPPORT_R3
+        _isInitialized.SetValue(true);
+#else
+        _isInitialized.Value = true;
+#endif
+    }
+
+    private void SubscribeToDisposeNotifier(TViewModel owner)
+    {
+#if !PROJECT_SUPPORT_R3
+        owner.DisposeNotifier.Subscribe(OnViewModelDisposed);
+#else
+        _viewModelDisposeSubscription?.Dispose();
+        _viewModelDisposeSubscription = owner.DisposeNotifier.Subscribe(_ => OnViewModelDisposed());
+#endif
+    }
+
+    private void UnsubscribeFromDisposeNotifier()
+    {
+#if !PROJECT_SUPPORT_R3
+        viewModel.DisposeNotifier.Unsubscribe(OnViewModelDisposed);
+#else
+        _viewModelDisposeSubscription?.Dispose();
+        _viewModelDisposeSubscription = null;
+#endif
     }
 }
 }

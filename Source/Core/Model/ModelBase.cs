@@ -1,8 +1,13 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+#if PROJECT_SUPPORT_R3
+using R3;
+#else
 using Azzazelloqq.MVVM.ReactiveLibrary;
+#endif
 using Disposable;
+using CompositeDisposable = Disposable.CompositeDisposable;
 
 namespace Azzazelloqq.MVVM.Core
 {
@@ -12,7 +17,11 @@ namespace Azzazelloqq.MVVM.Core
 /// </summary>
 public abstract class ModelBase : DisposableBase, IModel
 {
+#if PROJECT_SUPPORT_R3
+	public ReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+#else
 	public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+#endif
 	
 	/// <summary>
 	/// A composite disposable that manages the disposal of both the view and the model, along with other disposable resources.
@@ -24,7 +33,11 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// </summary>
 	protected CancellationToken disposeToken => disposeCancellationToken;
 
-	private ReactiveProperty<bool> _isInitialized = new();
+#if PROJECT_SUPPORT_R3
+	private readonly ReactiveProperty<bool> _isInitialized = new(false);
+#else
+	private readonly ReactiveProperty<bool> _isInitialized = new();
+#endif
 
 	/// <inheritdoc/>
 	void IModel.Initialize()
@@ -36,7 +49,7 @@ public abstract class ModelBase : DisposableBase, IModel
 
 		OnInitialize();
 
-		_isInitialized.SetValue(true);
+		MarkInitialized();
 	}
 
 	/// <inheritdoc/>
@@ -49,7 +62,7 @@ public abstract class ModelBase : DisposableBase, IModel
 		
 		await OnInitializeAsync(token);
 		
-		_isInitialized.SetValue(true);
+		MarkInitialized();
 	}
 	
 	/// <summary>
@@ -98,5 +111,14 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// </summary>
 	protected abstract void OnDispose();
 	protected abstract ValueTask OnDisposeAsync(CancellationToken token);
+
+	private void MarkInitialized()
+	{
+#if PROJECT_SUPPORT_R3
+		_isInitialized.Value = true;
+#else
+		_isInitialized.SetValue(true);
+#endif
+	}
 }
 }

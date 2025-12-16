@@ -1,4 +1,5 @@
-﻿using System;
+#if !PROJECT_SUPPORT_R3
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Azzazelloqq.MVVM.ReactiveLibrary.Callbacks;
@@ -79,3 +80,4 @@ public interface IReactiveDictionary<TKey, TValue> :
 	public void UnsubscribeOnValueChangedByKey(Action<KeyValuePair<TKey, TValue>> action);
 }
 }
+#endif
