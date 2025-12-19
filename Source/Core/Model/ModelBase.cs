@@ -114,7 +114,7 @@ public abstract class ModelBase : DisposableBase, IModel
 	/// Subclasses can override this method to implement custom cleanup code
 	/// without overriding the base <see cref="Dispose"/> method.
 	/// </summary>
-	protected abstract void OnDispose();
+	protected abstract override void OnDispose();
 	protected abstract ValueTask OnDisposeAsync(CancellationToken token);
 
 	private void MarkInitialized()
