@@ -160,9 +160,9 @@ public abstract class ViewMonoBehavior<TViewModel> : MonoBehaviourDisposable,  I
     /// </summary>
     /// <param name="disposable">An object that implements <see cref="IAsyncDisposable"/> to be added
     /// to the composite disposable collection for managed disposal.</param>
-    protected void AddDisposable(IAsyncDisposable disposable)
+    protected void AddAsyncDisposable(IAsyncDisposable disposable)
     {
-        compositeDisposable.AddDisposable(disposable);
+        compositeDisposable.AddAsyncDisposable(disposable);
     }
 
     

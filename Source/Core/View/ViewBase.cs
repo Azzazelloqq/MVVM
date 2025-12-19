@@ -184,9 +184,9 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
     /// created within the view.
     /// </summary>
     /// <param name="disposable">The asynchronously disposable resource to add to the composite disposable container.</param>
-    protected void AddDisposable(IAsyncDisposable disposable)
+    protected void AddAsyncDisposable(IAsyncDisposable disposable)
     {
-        compositeDisposable.AddDisposable(disposable);
+        compositeDisposable.AddAsyncDisposable(disposable);
     }
 
     private void OnViewModelDisposed()

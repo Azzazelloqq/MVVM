@@ -146,9 +146,9 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     /// Adds an asynchronous disposable resource to the composite disposable collection of the view model.
     /// </summary>
     /// <param name="disposable">The asynchronous disposable resource to add to the collection.</param>
-    protected void AddDisposable(IAsyncDisposable disposable)
+    protected void AddAsyncDisposable(IAsyncDisposable disposable)
     {
-        compositeDisposable.AddDisposable(disposable);
+        compositeDisposable.AddAsyncDisposable(disposable);
     }
 
     
