@@ -114,8 +114,6 @@ public abstract class ViewModelBase<TModel> : DisposableBase, IViewModel where T
     {
         base.Dispose(disposing);
         
-        OnDispose();
-        
         compositeDisposable.Dispose();
         
         NotifyDisposed();

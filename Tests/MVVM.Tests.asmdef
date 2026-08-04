@@ -6,9 +6,12 @@
         "UnityEditor.TestRunner",
         "MVVM.Core",
         "MVVM.Reactive",
+        "MVVM.Unity",
         "Disposable",
         "MVP.Tests",
-        "UniTask"
+        "UniTask",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "versionDefines": [
         {

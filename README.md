@@ -15,6 +15,7 @@ components to a view model.
 - Deterministic cleanup through the `Disposable` module.
 - Optional R3 integration through `PROJECT_SUPPORT_R3`.
 - Optional UniTask support through `PROJECT_SUPPORT_UNITASK`.
+- Unity UI and TextMesh Pro subscription/binding adapters.
 - Example inventory flow and a test assembly.
 
 ## Installation
@@ -77,12 +78,36 @@ public IAsyncCommand LoadCommand { get; }
 The included inventory example demonstrates reactive collections, a command for
 adding items and an async command for loading them.
 
+## Reactive Unity bindings
+
+All subscriptions return `IDisposable`, so the owning view can add them to its
+composite disposable:
+
+```csharp
+viewModel.State
+    .SubscribeSelected(state => state.Score, score => Debug.Log(score))
+    .AddTo(subscriptions);
+
+saveButton.SubscribeClick(viewModel.SaveCommand.Execute)
+    .AddTo(subscriptions);
+
+viewModel.PlayerName.BindText(playerNameText)
+    .AddTo(subscriptions);
+
+nameInput.SubscribeValueChanged(viewModel.SetPlayerName)
+    .AddTo(subscriptions);
+```
+
+Bindings are one-way and event-driven. `SubscribeSelected` reacts when its source
+emits and suppresses values whose selected field did not change.
+
 ## Assemblies
 
 | Assembly | Purpose |
 | --- | --- |
 | `MVVM.Core` | Models, views, view models and commands. |
 | `MVVM.Reactive` | Reactive properties, collections, callbacks and disposal extensions. |
+| `MVVM.Unity` | Unity, uGUI and TextMesh Pro subscriptions and one-way bindings. |
 | `MVVM.Example` | Inventory and item usage examples. |
 | `MVVM.Tests` | Behaviour-focused tests. |
 
@@ -100,6 +125,7 @@ stop when the view model is disposed.
 ```text
 Source/Core/             Models, views, view models and commands
 Source/ReactiveLibrary/  Reactive primitives and collections
+Source/Unity/            Unity, uGUI and TextMesh Pro adapters
 Example/                 Inventory example
 Tests/                   Unit and integration tests
 ```

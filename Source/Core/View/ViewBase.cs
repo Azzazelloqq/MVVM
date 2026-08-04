@@ -117,8 +117,6 @@ public abstract class ViewBase<TViewModel> : DisposableBase, IView where TViewMo
     {
         base.Dispose(disposing);
         
-        OnDispose();
-        
         compositeDisposable.Dispose();
         
         // Unsubscribe from ViewModel's dispose notifier if it was initialized

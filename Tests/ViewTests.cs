@@ -168,8 +168,20 @@ namespace Azzazelloqq.MVVM.Tests
 
             // Assert
             Assert.IsTrue(_testView.IsOnDisposeCalled, "OnDispose should be called");
+            Assert.AreEqual(1, _testView.OnDisposeCallCount);
             Assert.IsTrue(_testView.IsDisposed, "View should be marked as disposed");
             Assert.IsTrue(_testView.IsUnsubscribedFromDisposeNotifier, "Should unsubscribe from DisposeNotifier");
+        }
+
+        [Test]
+        public void Dispose_CalledTwice_ShouldCallOnDisposeExactlyOnce()
+        {
+            _testView.Initialize(_testViewModel);
+
+            _testView.Dispose();
+            _testView.Dispose();
+
+            Assert.AreEqual(1, _testView.OnDisposeCallCount);
         }
 
         [Test]
@@ -228,6 +240,7 @@ namespace Azzazelloqq.MVVM.Tests
             public bool IsOnInitializeAsyncCalled { get; private set; }
             public bool IsOnDisposeCalled { get; private set; }
             public bool IsOnDisposeAsyncCalled { get; private set; }
+            public int OnDisposeCallCount { get; private set; }
             public bool IsInitialized => _isInitialized;
             public bool IsSubscribedToDisposeNotifier { get; private set; }
             public bool IsUnsubscribedFromDisposeNotifier { get; private set; }
@@ -264,6 +277,7 @@ namespace Azzazelloqq.MVVM.Tests
             protected override void OnDispose()
             {
                 IsOnDisposeCalled = true;
+                OnDisposeCallCount++;
                 IsUnsubscribedFromDisposeNotifier = true;
             }
 

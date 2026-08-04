@@ -79,8 +79,6 @@ public abstract class ModelBase : DisposableBase, IModel
 	{
 		base.Dispose(disposing);
 		
-		OnDispose();
-		
 		compositeDisposable.Dispose();
 	}
 	
@@ -90,7 +88,7 @@ public abstract class ModelBase : DisposableBase, IModel
 		
 		await OnDisposeAsync(token);
 		
-		compositeDisposable?.DisposeAsync(token);
+		await compositeDisposable.DisposeAsync(token, continueOnCapturedContext);
 	}
 
 	/// <summary>
